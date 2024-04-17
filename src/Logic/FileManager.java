@@ -7,7 +7,7 @@ import java.io.File;
 public class FileManager {
     public FileManager() {
 
-        // changes the default swing filechooser appeareance to the system one
+        // changes the default swing filechooser appearance to the system one
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
