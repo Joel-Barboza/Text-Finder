@@ -1,19 +1,26 @@
 package Interface;
 
 import Logic.FileManager;
+import Logic.Library;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class App {
     private static JFrame mainFrame;
+    public static Library library;
     public static void main(String[] args) {
         App app = new App();
+        library = new Library();
 
     }
 
@@ -155,7 +162,21 @@ public class App {
         buttonStyle(addNewFile, "#bababa");
         mouseHoverEvents(addNewFile, "#bababa", "#dadada");
         addNewFile.addActionListener(e -> {
-            //FileManager fileManager = new FileManager();
+            FileManager fileManager = new FileManager(library);
+            //fileManager.getFilePath();
+//
+//
+//            Path fileName = Path.of(
+//                    "C:\\Users\\user\\Desktop\\Joel\\Text-Finder\\library.txt");
+//            for (File f : fileManager.getFilePath()) {
+//                try {
+//                    Files.writeString(fileName, f.getAbsolutePath());
+//                } catch (IOException ex) {
+//                    throw new RuntimeException(ex);
+//                }
+//
+//
+//            }
             System.out.println("agregando");
         });
         secondaryOptionsPanels[0].add(addNewFile);
