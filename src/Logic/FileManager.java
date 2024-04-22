@@ -3,9 +3,13 @@ package Logic;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileManager {
-    public FileManager() {
+    private ArrayList<File> files;
+
+    public FileManager(Library library) {
 
         // changes the default swing filechooser appearance to the system one
         try {
@@ -40,11 +44,20 @@ public class FileManager {
         // do something on open button on file chooser window click
         int showOpenDialog = jFileChooser.showOpenDialog(null);
         if (showOpenDialog == JFileChooser.APPROVE_OPTION) {
-            File[] uploadDir = jFileChooser.getSelectedFiles();
-            for (File f : uploadDir) {
-                System.out.println(f.getAbsolutePath());
 
-            }
+            File[] selectedFiles = jFileChooser.getSelectedFiles();
+            files = new ArrayList<>(List.of(selectedFiles));
+            library.addToLibrary(files);
+            ArrayList<File> listOfFiles = library.loadFromLibraryFile();
+
+//            for (File f : listOfFiles) {
+//                System.out.println(f.getAbsolutePath());
+//
+//            }
         }
+    }
+
+    public ArrayList<File> getFilePath(){
+        return this.files;
     }
 }
