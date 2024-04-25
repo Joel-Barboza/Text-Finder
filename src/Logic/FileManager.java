@@ -1,5 +1,7 @@
 package Logic;
 
+import Interface.App;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
@@ -48,7 +50,8 @@ public class FileManager {
             File[] selectedFiles = jFileChooser.getSelectedFiles();
             files = new ArrayList<>(List.of(selectedFiles));
             library.addToLibrary(files);
-            ArrayList<File> listOfFiles = library.loadFromLibraryFile();
+            //ArrayList<File> listOfFiles = library.loadFromLibraryFile();
+            App.app.listFilesOnScreen();
 
 //            for (File f : listOfFiles) {
 //                System.out.println(f.getAbsolutePath());

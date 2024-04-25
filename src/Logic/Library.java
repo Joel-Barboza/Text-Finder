@@ -1,7 +1,6 @@
 package Logic;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
@@ -11,41 +10,35 @@ import java.util.Date;
 
 public class Library {
     private final String FILE_PATH = "./src/library.txt";
-    private final ArrayList<File> fileList = new ArrayList<>();
+    public ArrayList<File> fileList;
 
     public Library(){
-        //ArrayList<File> savedFilesInLibrary = loadFromLibraryFile();
+        //ArrayList<File> savedFilesInLibrary =
+        loadFromLibraryFile();
     }
 
+    // to extract try/catch block
     public void addToLibrary(ArrayList<File> files) {
         try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
-
-            for (File f : files) {
-                if (!isInList(f)) {
-                    fileList.add(f);
-                    DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-                    String formattedDate = sdf.format(new Date(f.lastModified()));
-                    String removedString = formattedDate.replaceAll("\\u00A0", ""); // to remove   from text
-                    writer.write(f.getName() + "," +
-                            f.getAbsolutePath() + "," +
-                            removedString + "," +
-                            String.format("%,d", Files.size(Path.of(f.getAbsolutePath())) / 1024) +
-                            System.lineSeparator());
-                }
-
-            }
-//            for (File file : fileList) {
-//                writer.write(file.getName() + "," +
-//                        file.getAbsolutePath() + "," +
-//                        sdf.format(file.lastModified()) + "," +
-//                        String.format("%,d", Files.size(Path.of(file.getAbsolutePath())) / 1024) +
-//                        System.lineSeparator());
-//                //System.out.println(sdf.format("%,d", Files.size(Path.of(file.getAbsolutePath())) / 1024));
-//
-//            }
-
+            add(files, writer);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void add(ArrayList<File> files, FileWriter writer) throws IOException {
+        for (File f : files) {
+            if (!isInList(f)) {
+                fileList.add(f);
+                DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+                String formattedDate = sdf.format(new Date(f.lastModified()));
+                String removedString = formattedDate.replaceAll("\\u00A0", ""); // to remove   from text
+                writer.write(f.getName() + "," +
+                        f.getAbsolutePath() + "," +
+                        removedString + "," +
+                        String.format("%,d", Files.size(Path.of(f.getAbsolutePath())) / 1024) +
+                        System.lineSeparator());
+            }
         }
     }
 
@@ -54,23 +47,25 @@ public class Library {
         for (File file : fileList) {
             fileNames.add(file.getAbsolutePath());
         }
+        if (fileNames.contains(f.getAbsolutePath())){
+            System.out.println(f.getAbsolutePath() + "in list");
+        }
         return fileNames.contains(f.getAbsolutePath());
     }
 
-    public ArrayList<File> loadFromLibraryFile() {
+    public void loadFromLibraryFile() {
+        fileList = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
-            if (reader.readLine() != null) {
 
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",");
-                    fileList.add(new File(parts[1]));
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                fileList.add(new File(parts[1]));
 
-                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return fileList;
     }
 }

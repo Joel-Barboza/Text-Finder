@@ -7,20 +7,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class App {
     private static JFrame mainFrame;
     public static Library library;
+    public static App app;
+    public static JPanel libraryFilesPanel;
     public static void main(String[] args) {
-        App app = new App();
         library = new Library();
+        app = new App();
 
     }
 
@@ -31,7 +29,9 @@ public class App {
         mainFrame.setLayout(new BorderLayout());
         mainFrame.setLocationRelativeTo(null); // position frame at the center of the screen
 
-        headerJPanel();
+        createHeaderPanel();
+        createMainContentPanel();
+
 
         mainFrame.setVisible(true); // shows frame
 
@@ -40,7 +40,7 @@ public class App {
 
     }
 
-    public void headerJPanel() {
+    public void createHeaderPanel() {
         JPanel header = new JPanel();
         header.setLayout(new BorderLayout());
         header.setPreferredSize(new Dimension(1200,100));
@@ -201,6 +201,8 @@ public class App {
 
     }
 
+
+
     private void findOptions(JPanel[] secondaryOptionsPanels, JButton[] mainButtons) {
         JLabel enterTextLabel = new JLabel("Ingrese el texto:");
         enterTextLabel.setFont(new Font("Arial", Font.PLAIN, 25));
@@ -221,26 +223,46 @@ public class App {
         });
         secondaryOptionsPanels[1].add(find);
     }
+
+
+    private void createMainContentPanel(){
+        JPanel mainContent = new JPanel();
+        mainContent.setLayout(new BorderLayout());
+        mainContent.setPreferredSize(new Dimension(1200,700));
+        mainContent.setBackground(Color.decode("#111111"));
+
+        showLibraryFiles(mainContent);
+
+//        JPanel mainOptions = new JPanel();
+//        mainOptions.setLayout(new BoxLayout(mainOptions, BoxLayout.X_AXIS));
+//        mainOptions.setPreferredSize(new Dimension(1200,50));
+//        mainOptions.setBackground(Color.decode("#aeaeae"));
+//        mainContent.add(mainOptions, BorderLayout.NORTH);
+
+        mainFrame.add(mainContent, BorderLayout.CENTER);
+
+    }
+    private void showLibraryFiles(JPanel mainContent){
+        libraryFilesPanel = new JPanel();
+        libraryFilesPanel.setLayout(new BoxLayout(libraryFilesPanel, BoxLayout.Y_AXIS));
+        //libraryFilesPanel.setAlignmentY(JButton.CENTER);
+        libraryFilesPanel.setPreferredSize(new Dimension(1200,700));
+        libraryFilesPanel.setBackground(Color.decode("#eeeeee"));
+        mainContent.add(libraryFilesPanel, BorderLayout.CENTER);
+
+        listFilesOnScreen();
+
+    }
+
+    public void listFilesOnScreen(){
+        libraryFilesPanel.removeAll();
+        libraryFilesPanel.revalidate();
+        libraryFilesPanel.repaint();
+        for (File file: library.fileList){
+            JLabel fileLabel = new JLabel(file.getName() + " - " + file.getAbsolutePath());
+            fileLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+            libraryFilesPanel.add(fileLabel);
+        }
+    }
 }
 
-
-//        String biblioOptions[] = {"Ver biblioteca", "Editar biblioteca", "Noida", "Kolkata", "New Delhi"};
-//        JComboBox biblio = new JComboBox(biblioOptions);
-//        biblio.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String selectedOption = (String) biblio.getItemAt(biblio.getSelectedIndex());
-//                if (Objects.equals(selectedOption, "Ver biblioteca")){
-//                    System.out.println("ver");
-//
-//                } else if (Objects.equals(selectedOption, "Editar biblioteca")){
-//                    System.out.println("editar");
-//
-//                } else {
-//                    System.out.println("si");
-//                }
-//            }
-//        });
-//
-//        biblio.setBounds(200, 100, 200,50);
-//        header.add(biblio);
