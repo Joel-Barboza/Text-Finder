@@ -1,3 +1,6 @@
+### library file ###
+./src/library.txt
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
