@@ -1,5 +1,0 @@
-Actividad_1.txt,C:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Actividad_1.txt,21/03/2024 08:49 p.m.,0
-Head_First_Java_A_Brain-Friendly_Guide.pdf,C:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Head_First_Java_A_Brain-Friendly_Guide.pdf,10/02/2024 06:34 p.m.,159 696
-Link_Repo_Playlist.txt,C:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Link_Repo_Playlist.txt,22/03/2024 02:01 p.m.,0
-Propuesta de division de sprints.docx,C:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Propuesta de division de sprints.docx,02/03/2024 10:51 p.m.,144
-Tarea_clean-code.docx,C:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Tarea_clean-code.docx,24/04/2024 11:36 p.m.,696
