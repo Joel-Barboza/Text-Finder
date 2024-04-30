@@ -7,10 +7,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 public class Library {
     private final String FILE_PATH = "./src/library.txt";
     public ArrayList<File> fileList;
+    private final ArrayList<File> acceptedFiles = new ArrayList<>();
 
     public Library(){
         //ArrayList<File> savedFilesInLibrary =
@@ -26,8 +29,39 @@ public class Library {
         }
     }
 
+    private String getFileExtension(File file) {
+        String extension = "";
+
+        int i = file.getName().lastIndexOf('.');
+        if (i > 0) {
+            extension = file.getName().substring(i+1);
+        }
+        return extension;
+    }
+    private void chosenFileExtensionOnly(ArrayList<File> files){
+
+        for (File file : files){
+            String fileExtension = getFileExtension(file);
+            if (file.isDirectory()) {
+                File[] filesInDir = file.listFiles();
+                assert filesInDir != null;
+                chosenFileExtensionOnly(new ArrayList<>(List.of(filesInDir)));
+            } else if (file.isFile() &&
+                    (
+                            Objects.equals(fileExtension, "txt") ||
+                            Objects.equals(fileExtension, "pdf") ||
+                            Objects.equals(fileExtension, "docx")
+                    )
+            ) {
+                acceptedFiles.add(file);
+            }
+
+        }
+    }
+
     private void add(ArrayList<File> files, FileWriter writer) throws IOException {
-        for (File f : files) {
+        chosenFileExtensionOnly(files);
+        for (File f : acceptedFiles) {
             if (!isInList(f)) {
                 fileList.add(f);
                 DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
@@ -68,4 +102,6 @@ public class Library {
             e.printStackTrace();
         }
     }
+
+
 }
