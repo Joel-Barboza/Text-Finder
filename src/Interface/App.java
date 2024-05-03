@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -16,13 +18,14 @@ public class App {
     public static Library library;
     public static App app;
     public static JPanel libraryFilesPanel;
-    public static void main(String[] args) {
+    public static JButton deleteFile;
+    public static void main(String[] args) throws IOException {
         library = new Library();
         app = new App();
 
     }
 
-    public App() {
+    public App() throws IOException {
         mainFrame = new JFrame("Reproductor"); // create new frame
         mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE); // set close operation
         mainFrame.setSize(1200,800); // set frame dimensions
@@ -83,7 +86,7 @@ public class App {
         secundaryBiblioOptions.setAlignmentX(JButton.CENTER_ALIGNMENT);
         secundaryBiblioOptions.setPreferredSize(new Dimension(1200,50));
         secundaryBiblioOptions.setBackground(Color.decode("#bababa"));
-        secundaryBiblioOptions.setVisible(false);
+        secundaryBiblioOptions.setVisible(true);
         secondaryOptions.add(secundaryBiblioOptions);
 
 
@@ -96,7 +99,7 @@ public class App {
         secondaryOptions.add(secundaryFindOptions);
 
         JPanel[] secondaryOptionsPanels = {secundaryBiblioOptions, secundaryFindOptions};
-        biblioOptions(secondaryOptionsPanels, mainButtons);
+        biblioOptions(secondaryOptionsPanels);
         findOptions(secondaryOptionsPanels, mainButtons);
         mouseHoverEvents(biblioOption, "#aeaeae", "#cacaca");
         mainButtonsCLickEvent(biblioOption, mainButtons,secondaryOptionsPanels);
@@ -155,38 +158,34 @@ public class App {
         });
     }
 
-    private void biblioOptions(JPanel[] secondaryOptionsPanels, JButton[] mainButtons) {
+    private void biblioOptions(JPanel[] secondaryOptionsPanels) {
 
         // add to library button
         JButton addNewFile = new JButton("Agregar");
         buttonStyle(addNewFile, "#bababa");
         mouseHoverEvents(addNewFile, "#bababa", "#dadada");
         addNewFile.addActionListener(e -> {
-            FileManager fileManager = new FileManager(library);
-            //fileManager.getFilePath();
-//
-//
-//            Path fileName = Path.of(
-//                    "C:\\Users\\user\\Desktop\\Joel\\Text-Finder\\library.txt");
-//            for (File f : fileManager.getFilePath()) {
-//                try {
-//                    Files.writeString(fileName, f.getAbsolutePath());
-//                } catch (IOException ex) {
-//                    throw new RuntimeException(ex);
-//                }
-//
-//
-//            }
-            System.out.println("agregando");
+            try {
+                new FileManager(library);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         secondaryOptionsPanels[0].add(addNewFile);
 
 
-        JButton deleteFile = new JButton("Eliminar");
+        deleteFile = new JButton("Eliminar");
+        deleteFile.setEnabled(false);
         buttonStyle(deleteFile, "#bababa");
         mouseHoverEvents(deleteFile, "#bababa", "#dadada");
         deleteFile.addActionListener(e -> {
-            System.out.println("eliminando");
+            library.deleteFromLibrary(selectedRowFile);
+            for (JPanel rowToDelete : selectedRowJPanel) {
+                rowToDelete.setVisible(false);
+            }
+            deleteFile.setEnabled(false);
+            selectedRowJPanel.clear();
+            selectedRowFile.clear();
         });
         secondaryOptionsPanels[0].add(deleteFile);
 
@@ -225,7 +224,7 @@ public class App {
     }
 
 
-    private void createMainContentPanel(){
+    private void createMainContentPanel() throws IOException {
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BorderLayout());
         mainContent.setPreferredSize(new Dimension(1200,700));
@@ -239,30 +238,93 @@ public class App {
 //        mainOptions.setBackground(Color.decode("#aeaeae"));
 //        mainContent.add(mainOptions, BorderLayout.NORTH);
 
+
+
         mainFrame.add(mainContent, BorderLayout.CENTER);
 
     }
-    private void showLibraryFiles(JPanel mainContent){
+    private void showLibraryFiles(JPanel mainContent) throws IOException {
         libraryFilesPanel = new JPanel();
         libraryFilesPanel.setLayout(new BoxLayout(libraryFilesPanel, BoxLayout.Y_AXIS));
-        //libraryFilesPanel.setAlignmentY(JButton.CENTER);
-        libraryFilesPanel.setPreferredSize(new Dimension(1200,700));
+        libraryFilesPanel.setAlignmentY(JButton.TOP);
+        //libraryFilesPanel.setPreferredSize(new Dimension(1200, 30000));
         libraryFilesPanel.setBackground(Color.decode("#eeeeee"));
         mainContent.add(libraryFilesPanel, BorderLayout.CENTER);
 
         listFilesOnScreen();
 
+        JScrollPane scrollPane = new JScrollPane(libraryFilesPanel);
+        scrollPane.setBackground(Color.decode("#0B121E"));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(13);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getVerticalScrollBar().setBackground(Color.decode("#1a1a1a"));
+
+        mainContent.add(scrollPane, BorderLayout.CENTER);
+
+
     }
 
-    public void listFilesOnScreen(){
+    public void listFilesOnScreen() throws IOException {
         libraryFilesPanel.removeAll();
         libraryFilesPanel.revalidate();
         libraryFilesPanel.repaint();
         for (File file: library.fileList){
-            JLabel fileLabel = new JLabel(file.getName() + " - " + file.getAbsolutePath());
-            fileLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-            libraryFilesPanel.add(fileLabel);
+            JPanel row = new JPanel();
+            row.setLayout(new BorderLayout());
+            rowMouseListener(row, file);
+
+            JLabel fileName = new JLabel(file.getName());
+            fileName.setPreferredSize(new Dimension(400,40));
+
+            JLabel fileDate = new JLabel(library.getFileDate(file));
+            fileDate.setPreferredSize(new Dimension(400,40));
+
+            JLabel fileSize = new JLabel(library.getFileSize(file) + " KB");
+            fileSize.setPreferredSize(new Dimension(350,40));
+
+            Font fileTextFont = new Font("Arial", Font.PLAIN, 20);
+            fileName.setFont(fileTextFont);
+            fileDate.setFont(fileTextFont);
+            fileSize.setFont(fileTextFont);
+
+            row.add(fileName, BorderLayout.WEST);
+            row.add(fileDate, BorderLayout.CENTER);
+            row.add(fileSize, BorderLayout.EAST);
+
+
+
+
+
+            libraryFilesPanel.add(row);
         }
+    }
+
+    private ArrayList<File> selectedRowFile = new ArrayList<>();
+    private ArrayList<JPanel> selectedRowJPanel = new ArrayList<>();
+    private void rowMouseListener(JPanel row, File file) {
+
+        row.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                row.setBackground(Color.decode("#DDDDDD"));
+                selectedRowJPanel.add(row);
+                selectedRowFile.add(file);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                deleteFile.setEnabled(true);
+//                for (int i = 0; i < selectedRowFile.size(); i++) {
+//                    File toDelete = selectedRowFile.get(i);
+//                    //toDelete
+//                    selectedRowFile.remove(i);
+//                    selectedRowJPanel.remove(i);
+//
+//                }
+
+            }
+        });
     }
 }
 

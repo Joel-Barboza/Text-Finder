@@ -5,13 +5,14 @@ import Interface.App;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileManager {
     private ArrayList<File> files;
 
-    public FileManager(Library library) {
+    public FileManager(Library library) throws IOException {
 
         // changes the default swing filechooser appearance to the system one
         try {
