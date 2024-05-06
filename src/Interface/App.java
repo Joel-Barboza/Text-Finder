@@ -1,5 +1,6 @@
 package Interface;
 
+import Logic.AVLTree;
 import Logic.FileManager;
 import Logic.Library;
 
@@ -8,6 +9,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -19,12 +22,30 @@ public class App {
     public static App app;
     public static JPanel libraryFilesPanel;
     public static JButton deleteFile;
+    public static AVLTree avlTree;
     public static void main(String[] args) throws IOException {
+        avlTree = new AVLTree();
         library = new Library();
         app = new App();
 
+        System.out.println("sesese");
+
+//        avlTree.insert("hóla", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Matrices-Sistemas-Determinantes.pdf"));
+//        avlTree.insert("Hola", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
+//        avlTree.insert("hóla", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
+//        avlTree.insert("pedro", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
+//        avlTree.insert("dedo", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
+//        avlTree.insert("ajo", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
+//        avlTree.insert("22", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Sucesiones_y_series_-_Acuña_y_Calderón.pdf"));
+//        avlTree.insert("hóla", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
+
+
+
+
+
     }
 
+    public App() throws IOException {
     public App() throws IOException {
         mainFrame = new JFrame("Reproductor"); // create new frame
         mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE); // set close operation
@@ -81,24 +102,24 @@ public class App {
         secondaryOptions.setBackground(Color.decode("#bababa"));
         header.add(secondaryOptions, BorderLayout.SOUTH);
 
-        JPanel secundaryBiblioOptions = new JPanel();
-        secundaryBiblioOptions.setLayout(new BoxLayout(secundaryBiblioOptions, BoxLayout.X_AXIS));
-        secundaryBiblioOptions.setAlignmentX(JButton.CENTER_ALIGNMENT);
-        secundaryBiblioOptions.setPreferredSize(new Dimension(1200,50));
-        secundaryBiblioOptions.setBackground(Color.decode("#bababa"));
-        secundaryBiblioOptions.setVisible(true);
-        secondaryOptions.add(secundaryBiblioOptions);
+        JPanel secondaryBiblioOptions = new JPanel();
+        secondaryBiblioOptions.setLayout(new BoxLayout(secondaryBiblioOptions, BoxLayout.X_AXIS));
+        secondaryBiblioOptions.setAlignmentX(JButton.CENTER_ALIGNMENT);
+        secondaryBiblioOptions.setPreferredSize(new Dimension(1200,50));
+        secondaryBiblioOptions.setBackground(Color.decode("#bababa"));
+        secondaryBiblioOptions.setVisible(true);
+        secondaryOptions.add(secondaryBiblioOptions);
 
 
-        JPanel secundaryFindOptions = new JPanel();
-        secundaryFindOptions.setLayout(new BoxLayout(secundaryFindOptions, BoxLayout.X_AXIS));
-        secundaryFindOptions.setAlignmentX(JButton.CENTER_ALIGNMENT);
-        secundaryFindOptions.setPreferredSize(new Dimension(1200,50));
-        secundaryFindOptions.setBackground(Color.decode("#bababa"));
-        secundaryFindOptions.setVisible(false);
-        secondaryOptions.add(secundaryFindOptions);
+        JPanel secondaryFindOptions = new JPanel();
+        secondaryFindOptions.setLayout(new BoxLayout(secondaryFindOptions, BoxLayout.X_AXIS));
+        secondaryFindOptions.setAlignmentX(JButton.CENTER_ALIGNMENT);
+        secondaryFindOptions.setPreferredSize(new Dimension(1200,50));
+        secondaryFindOptions.setBackground(Color.decode("#bababa"));
+        secondaryFindOptions.setVisible(false);
+        secondaryOptions.add(secondaryFindOptions);
 
-        JPanel[] secondaryOptionsPanels = {secundaryBiblioOptions, secundaryFindOptions};
+        JPanel[] secondaryOptionsPanels = {secondaryBiblioOptions, secondaryFindOptions};
         biblioOptions(secondaryOptionsPanels);
         findOptions(secondaryOptionsPanels, mainButtons);
         mouseHoverEvents(biblioOption, "#aeaeae", "#cacaca");
@@ -159,6 +180,7 @@ public class App {
     }
 
     private void biblioOptions(JPanel[] secondaryOptionsPanels) {
+    private void biblioOptions(JPanel[] secondaryOptionsPanels) {
 
         // add to library button
         JButton addNewFile = new JButton("Agregar");
@@ -170,15 +192,29 @@ public class App {
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
+            try {
+                new FileManager(library);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         secondaryOptionsPanels[0].add(addNewFile);
 
 
         deleteFile = new JButton("Eliminar");
         deleteFile.setEnabled(false);
+        deleteFile = new JButton("Eliminar");
+        deleteFile.setEnabled(false);
         buttonStyle(deleteFile, "#bababa");
         mouseHoverEvents(deleteFile, "#bababa", "#dadada");
         deleteFile.addActionListener(e -> {
+            library.deleteFromLibrary(selectedRowFile);
+            for (JPanel rowToDelete : selectedRowJPanel) {
+                rowToDelete.setVisible(false);
+            }
+            deleteFile.setEnabled(false);
+            selectedRowJPanel.clear();
+            selectedRowFile.clear();
             library.deleteFromLibrary(selectedRowFile);
             for (JPanel rowToDelete : selectedRowJPanel) {
                 rowToDelete.setVisible(false);
@@ -225,6 +261,7 @@ public class App {
 
 
     private void createMainContentPanel() throws IOException {
+    private void createMainContentPanel() throws IOException {
         JPanel mainContent = new JPanel();
         mainContent.setLayout(new BorderLayout());
         mainContent.setPreferredSize(new Dimension(1200,700));
@@ -240,12 +277,17 @@ public class App {
 
 
 
+
+
         mainFrame.add(mainContent, BorderLayout.CENTER);
 
     }
     private void showLibraryFiles(JPanel mainContent) throws IOException {
+    private void showLibraryFiles(JPanel mainContent) throws IOException {
         libraryFilesPanel = new JPanel();
         libraryFilesPanel.setLayout(new BoxLayout(libraryFilesPanel, BoxLayout.Y_AXIS));
+        libraryFilesPanel.setAlignmentY(JButton.TOP);
+        //libraryFilesPanel.setPreferredSize(new Dimension(1200, 30000));
         libraryFilesPanel.setAlignmentY(JButton.TOP);
         //libraryFilesPanel.setPreferredSize(new Dimension(1200, 30000));
         libraryFilesPanel.setBackground(Color.decode("#eeeeee"));
@@ -263,13 +305,79 @@ public class App {
         mainContent.add(scrollPane, BorderLayout.CENTER);
 
 
+        JScrollPane scrollPane = new JScrollPane(libraryFilesPanel);
+        scrollPane.setBackground(Color.decode("#0B121E"));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(13);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getVerticalScrollBar().setBackground(Color.decode("#1a1a1a"));
+
+        mainContent.add(scrollPane, BorderLayout.CENTER);
+
+
     }
 
+    public void listFilesOnScreen() throws IOException {
     public void listFilesOnScreen() throws IOException {
         libraryFilesPanel.removeAll();
         libraryFilesPanel.revalidate();
         libraryFilesPanel.repaint();
         for (File file: library.fileList){
+            JPanel row = new JPanel();
+            row.setLayout(new BorderLayout());
+            rowMouseListener(row, file);
+
+            JLabel fileName = new JLabel(file.getName());
+            fileName.setPreferredSize(new Dimension(400,40));
+
+            JLabel fileDate = new JLabel(library.getFileDate(file));
+            fileDate.setPreferredSize(new Dimension(400,40));
+
+            JLabel fileSize = new JLabel(library.getFileSize(file) + " KB");
+            fileSize.setPreferredSize(new Dimension(350,40));
+
+            Font fileTextFont = new Font("Arial", Font.PLAIN, 20);
+            fileName.setFont(fileTextFont);
+            fileDate.setFont(fileTextFont);
+            fileSize.setFont(fileTextFont);
+
+            row.add(fileName, BorderLayout.WEST);
+            row.add(fileDate, BorderLayout.CENTER);
+            row.add(fileSize, BorderLayout.EAST);
+
+
+
+
+
+            libraryFilesPanel.add(row);
+        }
+    }
+
+    private ArrayList<File> selectedRowFile = new ArrayList<>();
+    private ArrayList<JPanel> selectedRowJPanel = new ArrayList<>();
+    private void rowMouseListener(JPanel row, File file) {
+
+        row.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                row.setBackground(Color.decode("#DDDDDD"));
+                selectedRowJPanel.add(row);
+                selectedRowFile.add(file);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                deleteFile.setEnabled(true);
+//                for (int i = 0; i < selectedRowFile.size(); i++) {
+//                    File toDelete = selectedRowFile.get(i);
+//                    //toDelete
+//                    selectedRowFile.remove(i);
+//                    selectedRowJPanel.remove(i);
+//
+//                }
+
+            }
+        });
             JPanel row = new JPanel();
             row.setLayout(new BorderLayout());
             rowMouseListener(row, file);

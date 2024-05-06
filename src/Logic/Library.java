@@ -1,5 +1,7 @@
 package Logic;
 
+import Interface.App;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,12 +16,14 @@ public class Library {
     private final String FILE_PATH = "./src/library.txt";
     public ArrayList<File> fileList;
     private final ArrayList<File> acceptedFiles = new ArrayList<>();
+    private final Indexer indexer = new Indexer();
 
     public Library(){
         loadFromLibraryFile();
+
     }
 
-    private String getFileExtension(File file) {
+    public String getFileExtension(File file) {
         String extension = "";
 
         int i = file.getName().lastIndexOf('.');
@@ -58,6 +62,15 @@ public class Library {
         }
     }
     private void add(ArrayList<File> files) throws IOException {
+    // to extract try/catch block
+    public void addToLibrary(ArrayList<File> files) {
+        try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
+            add(files);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void add(ArrayList<File> files) throws IOException {
         chosenFileExtensionOnly(files);
         for (File f : acceptedFiles) {
             if (!isInList(f)) {
@@ -65,6 +78,7 @@ public class Library {
             }
         }
         saveListOnFile();
+        indexer.indexFiles(fileList);
     }
 
     // to extract try/catch block
@@ -103,6 +117,7 @@ public class Library {
             fileNames.add(file.getAbsolutePath());
         }
 
+
         return fileNames.contains(f.getAbsolutePath());
     }
 
@@ -113,10 +128,12 @@ public class Library {
 
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(Character.toString((char) 31));
-                fileList.add(new File(parts[1]));
+                File fileToAdd = new File(parts[1]);
+                fileList.add(fileToAdd);
 
             }
-
+            indexer.indexFiles(fileList);
+        AVLTree yes = App.avlTree;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -126,11 +143,12 @@ public class Library {
         for (File file : fileListToDelete) {
             if (isInList(file)) {
                 fileList.remove(file);
-                System.out.println(fileList);
+                //System.out.println(fileList);
             }
 
         }
         saveListOnFile();
+        indexer.indexFiles(fileList);
     }
 
 }

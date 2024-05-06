@@ -53,6 +53,7 @@ public class FileManager {
             library.addToLibrary(files);
             //ArrayList<File> listOfFiles = library.loadFromLibraryFile();
             App.app.listFilesOnScreen();
+            AVLTree si = App.avlTree;
 
 //            for (File f : listOfFiles) {
 //                System.out.println(f.getAbsolutePath());
