@@ -1,5 +1,7 @@
 package Logic;
 
+import Interface.App;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,22 +16,14 @@ public class Library {
     private final String FILE_PATH = "./src/library.txt";
     public ArrayList<File> fileList;
     private final ArrayList<File> acceptedFiles = new ArrayList<>();
+    private final Indexer indexer = new Indexer();
 
     public Library(){
-        //ArrayList<File> savedFilesInLibrary =
         loadFromLibraryFile();
+
     }
 
-    // to extract try/catch block
-    public void addToLibrary(ArrayList<File> files) {
-        try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
-            add(files, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getFileExtension(File file) {
+    public String getFileExtension(File file) {
         String extension = "";
 
         int i = file.getName().lastIndexOf('.');
@@ -59,21 +53,53 @@ public class Library {
         }
     }
 
-    private void add(ArrayList<File> files, FileWriter writer) throws IOException {
+    // to extract try/catch block
+    public void addToLibrary(ArrayList<File> files) {
+        try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
+            add(files);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void add(ArrayList<File> files) throws IOException {
         chosenFileExtensionOnly(files);
         for (File f : acceptedFiles) {
             if (!isInList(f)) {
-                fileList.add(f);
-                DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-                String formattedDate = sdf.format(new Date(f.lastModified()));
-                String removedString = formattedDate.replaceAll("\\u00A0", ""); // to remove   from text
-                writer.write(f.getName() + "," +
-                        f.getAbsolutePath() + "," +
-                        removedString + "," +
-                        String.format("%,d", Files.size(Path.of(f.getAbsolutePath())) / 1024) +
-                        System.lineSeparator());
+                fileList.addFirst(f);
             }
         }
+        saveListOnFile();
+        indexer.indexFiles(fileList);
+    }
+
+    // to extract try/catch block
+    private void saveListOnFile() {
+        try (FileWriter writer = new FileWriter(FILE_PATH)) {
+            save(writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    private void save(FileWriter writer) throws IOException {
+        String data = "";
+        for (File file : fileList) {
+            data = data + file.getName() + (char) 31 +
+                    file.getAbsolutePath() + (char) 31 +
+                    getFileDate(file) + (char) 31 +
+                    getFileSize(file) +
+                    System.lineSeparator();
+        }
+        writer.write(data);
+    }
+    public String getFileSize(File file) throws IOException {
+        return String.format("%,d", Files.size(Path.of(file.getAbsolutePath())) / 1024).replaceAll("\\u00A0", "");
+    }
+
+    public String getFileDate(File file) {
+        DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        String formattedDate = sdf.format(new Date(file.lastModified()));
+        return formattedDate.replaceAll("\\u00A0", "");
     }
 
     private boolean isInList(File f){
@@ -81,9 +107,7 @@ public class Library {
         for (File file : fileList) {
             fileNames.add(file.getAbsolutePath());
         }
-        if (fileNames.contains(f.getAbsolutePath())){
-            System.out.println(f.getAbsolutePath() + "in list");
-        }
+
         return fileNames.contains(f.getAbsolutePath());
     }
 
@@ -93,15 +117,28 @@ public class Library {
             String line;
 
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                fileList.add(new File(parts[1]));
+                String[] parts = line.split(Character.toString((char) 31));
+                File fileToAdd = new File(parts[1]);
+                fileList.add(fileToAdd);
 
             }
-
+            indexer.indexFiles(fileList);
+        AVLTree yes = App.avlTree;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public void deleteFromLibrary(ArrayList<File> fileListToDelete) {
+        for (File file : fileListToDelete) {
+            if (isInList(file)) {
+                fileList.remove(file);
+                //System.out.println(fileList);
+            }
+
+        }
+        saveListOnFile();
+        indexer.indexFiles(fileList);
+    }
 
 }
