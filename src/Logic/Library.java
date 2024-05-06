@@ -62,6 +62,15 @@ public class Library {
         }
     }
     private void add(ArrayList<File> files) throws IOException {
+    // to extract try/catch block
+    public void addToLibrary(ArrayList<File> files) {
+        try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
+            add(files);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void add(ArrayList<File> files) throws IOException {
         chosenFileExtensionOnly(files);
         for (File f : acceptedFiles) {
             if (!isInList(f)) {
@@ -107,6 +116,7 @@ public class Library {
         for (File file : fileList) {
             fileNames.add(file.getAbsolutePath());
         }
+
 
         return fileNames.contains(f.getAbsolutePath());
     }
