@@ -12,11 +12,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static Interface.App.avlTree;
+
 public class Library {
     private final String FILE_PATH = "./src/library.txt";
     public ArrayList<File> fileList;
     private final ArrayList<File> acceptedFiles = new ArrayList<>();
-    private final Indexer indexer = new Indexer();
+    public final Indexer indexer = new Indexer();
 
     public Library(){
         loadFromLibraryFile();
@@ -33,7 +35,7 @@ public class Library {
         return extension;
     }
     private void chosenFileExtensionOnly(ArrayList<File> files){
-
+        //acceptedFiles.clear();
         for (File file : files){
             String fileExtension = getFileExtension(file);
             if (file.isDirectory()) {
@@ -53,16 +55,6 @@ public class Library {
         }
     }
 
-    // to extract try/catch block
-    public void addToLibrary(ArrayList<File> files) {
-        try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
-            add(files);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private void add(ArrayList<File> files) throws IOException {
-    // to extract try/catch block
     public void addToLibrary(ArrayList<File> files) {
         try (FileWriter writer = new FileWriter(FILE_PATH, true)) {
             add(files);
@@ -75,10 +67,11 @@ public class Library {
         for (File f : acceptedFiles) {
             if (!isInList(f)) {
                 fileList.addFirst(f);
+                //indexer.indexFiles(f);
             }
         }
         saveListOnFile();
-        indexer.indexFiles(fileList);
+        //indexer.indexFiles(fileList);
     }
 
     // to extract try/catch block
@@ -132,23 +125,30 @@ public class Library {
                 fileList.add(fileToAdd);
 
             }
-            indexer.indexFiles(fileList);
-        AVLTree yes = App.avlTree;
+            for (File file : fileList) {
+                //indexer.indexFiles(file);
+            }
+            AVLTree yes = avlTree;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void deleteFromLibrary(ArrayList<File> fileListToDelete) {
+        acceptedFiles.clear();
         for (File file : fileListToDelete) {
             if (isInList(file)) {
                 fileList.remove(file);
-                //System.out.println(fileList);
+                //indexer.deindexFile(file, App.avlTree.getRoot());
+                //avlTree.inOrder(file);
             }
 
         }
         saveListOnFile();
-        indexer.indexFiles(fileList);
+        for (File file : fileList) {
+            avlTree.clear();
+            //indexer.indexFiles(file);
+        }
     }
 
 }
