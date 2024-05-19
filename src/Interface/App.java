@@ -5,14 +5,18 @@ import Logic.FileManager;
 import Logic.Library;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 import java.util.ArrayList;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -21,15 +25,23 @@ public class App {
     public static Library library;
     public static App app;
     public static JPanel libraryFilesPanel;
+    public static JPanel libraryFoundFilesPanel;
+    public static JPanel mainContent;
     public static JButton deleteFile;
+    public static JLabel message;
     public static AVLTree avlTree;
+    public static FileManager fileManager;
     public static void main(String[] args) throws IOException {
         avlTree = new AVLTree();
         library = new Library();
+        fileManager = new FileManager();
         app = new App();
+
         for (File file : library.fileList) {
+            createActionInfoPanel("In progress -- Indexing files " + (library.fileList.indexOf(file) + 1)  + "/" + library.fileList.size() );
             library.indexer.indexFiles(file);
         }
+        createActionInfoPanel("Done -- Files on library indexed");
 
 
         System.out.println("sesese");
@@ -57,6 +69,8 @@ public class App {
 
         createHeaderPanel();
         createMainContentPanel();
+        message = new JLabel("sisisi");
+        mainFrame.add(message, BorderLayout.SOUTH);
 
 
         mainFrame.setVisible(true); // shows frame
@@ -89,9 +103,9 @@ public class App {
         JButton[] mainButtons = {biblioOption,findOption};
 
         // action listener for biblioOption button
-//        biblioOption.addActionListener(e -> {
-//            FileManager fileManager = new FileManager();
-//        });
+        biblioOption.addActionListener(e -> {
+
+        });
         mainOptions.add(biblioOption);
 
 
@@ -148,12 +162,15 @@ public class App {
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                CardLayout cl = (CardLayout) (mainContent.getLayout());
                 if (jButton == mainButtons[0]){
                     secondaryOptionsPanel[0].setVisible(true);
                     secondaryOptionsPanel[1].setVisible(false);
+                    cl.show(mainContent, "Panel 1");
                 } else if (jButton == mainButtons[1]) {
                     secondaryOptionsPanel[0].setVisible(false);
                     secondaryOptionsPanel[1].setVisible(true);
+                    cl.show(mainContent, "Panel 2");
 
                 } else {
                     System.out.println("pepe");
@@ -189,7 +206,7 @@ public class App {
         mouseHoverEvents(addNewFile, "#bababa", "#dadada");
         addNewFile.addActionListener(e -> {
             try {
-                new FileManager(library);
+                fileManager.getFiles(library);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -202,6 +219,7 @@ public class App {
         buttonStyle(deleteFile, "#bababa");
         mouseHoverEvents(deleteFile, "#bababa", "#dadada");
         deleteFile.addActionListener(e -> {
+            App.createActionInfoPanel("In progress -- Deleting files from Library (deindexing files)");
             library.deleteFromLibrary(selectedRowFile);
             for (JPanel rowToDelete : selectedRowJPanel) {
                 rowToDelete.setVisible(false);
@@ -209,6 +227,7 @@ public class App {
             deleteFile.setEnabled(false);
             selectedRowJPanel.clear();
             selectedRowFile.clear();
+            App.createActionInfoPanel("Done -- Files deindexed and deleted from library");
         });
         secondaryOptionsPanels[0].add(deleteFile);
 
@@ -236,24 +255,33 @@ public class App {
         input.setBorder(BorderFactory.createMatteBorder(12, 12, 12, 0, Color.decode("#bababa")));
         secondaryOptionsPanels[1].add(input);
 
-        JButton find = new JButton("Buscar");
-        find.setBorder(BorderFactory.createMatteBorder(12, 12, 12, 12, Color.decode("#bababa")));
-        buttonStyle(find,"#aeaeae");
-        mouseHoverEvents(find, "#aeaeae", "#cacaca");
-        find.addActionListener(e -> {
-            System.out.println("buscando");
+        JButton findWord = new JButton("Buscar palabras");
+        findWord.setBorder(BorderFactory.createMatteBorder(12, 12, 12, 12, Color.decode("#bababa")));
+        buttonStyle(findWord,"#aeaeae");
+        mouseHoverEvents(findWord, "#aeaeae", "#cacaca");
+        findWord.addActionListener(e -> {
+            listFoundFilesOnScreen(input);
         });
-        secondaryOptionsPanels[1].add(find);
+        secondaryOptionsPanels[1].add(findWord);
+        JButton findPhrase = new JButton("Buscar palabras");
+        findPhrase.setBorder(BorderFactory.createMatteBorder(12, 12, 12, 12, Color.decode("#bababa")));
+        buttonStyle(findPhrase,"#aeaeae");
+        mouseHoverEvents(findPhrase, "#aeaeae", "#cacaca");
+        findPhrase.addActionListener(e -> {
+            System.out.println("buscando frase");
+        });
+        secondaryOptionsPanels[1].add(findPhrase);
     }
 
 
     private void createMainContentPanel() throws IOException {
-        JPanel mainContent = new JPanel();
-        mainContent.setLayout(new BorderLayout());
+        mainContent = new JPanel();
+        mainContent.setLayout(new CardLayout());
         mainContent.setPreferredSize(new Dimension(1200,700));
         mainContent.setBackground(Color.decode("#111111"));
 
         showLibraryFiles(mainContent);
+        showFoundFiles(mainContent);
 
 //        JPanel mainOptions = new JPanel();
 //        mainOptions.setLayout(new BoxLayout(mainOptions, BoxLayout.X_AXIS));
@@ -274,21 +302,178 @@ public class App {
         libraryFilesPanel.setAlignmentY(JButton.TOP);
         //libraryFilesPanel.setPreferredSize(new Dimension(1200, 30000));
         libraryFilesPanel.setBackground(Color.decode("#eeeeee"));
-        mainContent.add(libraryFilesPanel, BorderLayout.CENTER);
+        //mainContent.add(libraryFilesPanel);
+
+
+        JScrollPane scrollPane1 = scrollPaneConfig(libraryFilesPanel);
+
+        mainContent.add(scrollPane1, "Panel 1");
 
         listFilesOnScreen();
 
-        JScrollPane scrollPane = new JScrollPane(libraryFilesPanel);
+
+
+
+    }
+    private void showFoundFiles(JPanel mainContent){
+        libraryFoundFilesPanel = new JPanel();
+        libraryFoundFilesPanel.setLayout(new BoxLayout(libraryFoundFilesPanel, BoxLayout.Y_AXIS));
+        libraryFoundFilesPanel.setAlignmentY(JButton.TOP);
+        //libraryFilesPanel.setPreferredSize(new Dimension(1200, 30000));
+        libraryFoundFilesPanel.setBackground(Color.decode("#eeeeee"));
+        //libraryFoundFilesPanel.setBackground(Color.decode("#ff000"));
+
+        //libraryFoundFilesPanel.setVisible(false);
+        //mainContent.add(libraryFoundFilesPanel);
+
+
+        JScrollPane scrollPane2 = scrollPaneConfig(libraryFoundFilesPanel);
+
+
+        mainContent.add(scrollPane2, "Panel 2");
+
+
+        //listFoundFilesOnScreen();
+
+
+
+
+    }
+
+    private void listFoundFilesOnScreen(JTextField input) {
+        libraryFoundFilesPanel.removeAll();
+        libraryFoundFilesPanel.revalidate();
+        libraryFoundFilesPanel.repaint();
+        String text = fileManager.stripAccents(input.getText());
+        ArrayList<ArrayList> findWord = avlTree.search(text);
+        if (findWord != null) {
+
+            ArrayList filesOfOccurrenceList = findWord.getFirst();
+            System.out.println(filesOfOccurrenceList);
+            ArrayList occurrenceNumList = avlTree.search(text).get(1);
+            ArrayList noDuplicatesOccurrenceList = new ArrayList(List.of(new HashSet<>(filesOfOccurrenceList).toArray())) ;
+
+            ArrayList<ArrayList<String>> textOnFiles = new ArrayList<>();
+
+            for (Object filePath : noDuplicatesOccurrenceList) {
+                File fileToRead = new File(String.valueOf(filePath));
+                String fileExtension = library.getFileExtension(fileToRead);
+                ArrayList<String> fileText;
+                if (Objects.equals(fileExtension, "txt")) {
+                    fileText = fileManager.openTXT(fileToRead);
+                    textOnFiles.add(fileText);
+                } else if (Objects.equals(fileExtension, "docx")) {
+                    fileText = fileManager.openDOCX(fileToRead);
+                    textOnFiles.add(fileText);
+
+                } else if (Objects.equals(fileExtension, "pdf")) {
+                    fileText = fileManager.openPDF(fileToRead);
+                    textOnFiles.add(fileText);
+
+                }
+            }
+            for (int i = 0; i < filesOfOccurrenceList.size(); i++) {
+
+
+
+                JPanel resultRow = new JPanel();
+                ArrayList<String> wordListOfFile = textOnFiles.get(noDuplicatesOccurrenceList.indexOf(filesOfOccurrenceList.get(i)));
+                int wordIndexInFile = findNthOccurrence(wordListOfFile, text, (Integer) occurrenceNumList.get(i));
+                ArrayList<String> textToPrint = getTextToPrint(wordIndexInFile, wordListOfFile, i);
+
+                if (wordIndexInFile != -1) {
+                    JTextPane textPane = new JTextPane();
+                    textPane.setEditable(false); // Make the text pane read-only
+
+                    StyledDocument doc = textPane.getStyledDocument();
+
+                    // Define regular style
+                    Style regularStyle = textPane.addStyle("RegularStyle", null);
+                    StyleConstants.setFontSize(regularStyle, 16);
+                    StyleConstants.setForeground(regularStyle, Color.BLACK);
+
+                    // Define highlighted style
+                    Style highlightedStyle = textPane.addStyle("HighlightedStyle", null);
+                    StyleConstants.setFontSize(highlightedStyle, 16);
+                    StyleConstants.setForeground(highlightedStyle, Color.RED);
+
+
+                    try {
+                        for (String word : textToPrint) {
+                            if (word.contains("###$$$###")) {
+                                String removeMark = word.replace("###$$$###", "");
+                                doc.insertString(doc.getLength(), removeMark, highlightedStyle);
+                            } else {
+                                doc.insertString(doc.getLength(), word, regularStyle);
+                            }
+                        }
+                    } catch (BadLocationException e) {
+                        e.printStackTrace();
+                    }
+
+                    resultRow.add(textPane);
+                }
+                libraryFoundFilesPanel.add(resultRow);
+            }
+        } else {
+            JLabel notFoundRow = new JLabel("Not Found");
+
+            notFoundRow.setPreferredSize(new Dimension(900, 50));
+
+            Font fileTextFont = new Font("Arial", Font.PLAIN, 20);
+            notFoundRow.setFont(fileTextFont);
+            libraryFoundFilesPanel.add(notFoundRow);
+        }
+    }
+
+    private ArrayList<String> getTextToPrint(int wordIndexInFile, ArrayList<String> wordListOfFile, int i) {
+        ArrayList<String> textToPrint = new ArrayList<>();
+        if (wordIndexInFile > 12) {
+            for (int j = 0; j < 10; j++) {
+                if ((wordIndexInFile - 3 + j) == wordIndexInFile) {
+                    textToPrint.add(wordListOfFile.get(wordIndexInFile - 3 + j) + "###$$$###");
+                } else {
+                    textToPrint.add(wordListOfFile.get(wordIndexInFile - 3 + j));
+                }
+                textToPrint.add(" ");
+            }
+
+        } else {
+
+            for (int j = 0; j < wordListOfFile.size(); j++) {
+                if (j == wordIndexInFile) {
+                    textToPrint.add(wordListOfFile.get(i) + "###$$$###");
+                } else {
+                    textToPrint.add(wordListOfFile.get(i));
+                }
+                textToPrint.add(" ");
+            }
+        }
+        return textToPrint;
+    }
+
+    private int findNthOccurrence(ArrayList<String> occurrences, String element, int occurrenceToFind) {
+        int occurrenceCount = 0;
+        for (int i = 0; i < occurrences.size(); i++) {
+            if (Objects.equals(occurrences.get(i), element)) {
+                ++occurrenceCount;
+            }
+            if (occurrenceToFind == occurrenceCount) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    private JScrollPane scrollPaneConfig(JPanel childPanel) {
+        JScrollPane scrollPane = new JScrollPane(childPanel);
         scrollPane.setBackground(Color.decode("#0B121E"));
         scrollPane.getVerticalScrollBar().setUnitIncrement(13);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setBackground(Color.decode("#1a1a1a"));
-
-
-        mainContent.add(scrollPane, BorderLayout.CENTER);
-
-
+        return scrollPane;
     }
 
     public void listFilesOnScreen() throws IOException {
@@ -351,6 +536,15 @@ public class App {
 
             }
         });
+
+    }
+
+    public static void createActionInfoPanel(String actionDescription){
+
+        message.setText(actionDescription);
+        message.setOpaque(true);
+        message.setBackground(Color.decode("#bababa"));
+        message.setFont(new Font("Arial", Font.PLAIN, 15));
 
     }
 }

@@ -145,16 +145,22 @@ public class AVLTree {
         return node;
     }
 
-    public boolean search(String key) {
+    public ArrayList<ArrayList> search(String key) {
         return searchRecursive(root, key);
     }
 
-    private boolean searchRecursive(AVLNode root, String key) {
+    private ArrayList<ArrayList> searchRecursive(AVLNode root, String key) {
         if (root == null || root.key.compareTo(key) == 0) {
-            return root != null;
+//            assert root != null;
+            //System.out.println(root.key);
+            if (root == null) {
+                return null;
+            } else {
+                return root.occurrencesList;
+            }
         }
 
-        if (root.key.compareTo(key)< 0) {
+        if (root.key.compareTo(key) < 0) {
             return searchRecursive(root.right, key);
         }
 
