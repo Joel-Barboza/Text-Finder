@@ -67,7 +67,7 @@ public class Library {
         for (File f : acceptedFiles) {
             if (!isInList(f)) {
                 fileList.addFirst(f);
-                //indexer.indexFiles(f);
+                indexer.indexFiles(f);
             }
         }
         saveListOnFile();
@@ -147,8 +147,10 @@ public class Library {
         saveListOnFile();
         for (File file : fileList) {
             avlTree.clear();
-            //indexer.indexFiles(file);
+            indexer.indexFiles(file);
         }
     }
+
+
 
 }

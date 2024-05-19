@@ -10,8 +10,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import java.io.*;
 import java.util.*;
 
-import static Interface.App.avlTree;
-import static Interface.App.library;
+import static Interface.App.*;
 
 public class Indexer {
 
@@ -39,90 +38,32 @@ public class Indexer {
         return extension;
     }
     private void indexTXT(File txtFile) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(txtFile.getAbsoluteFile()))) {
+         ArrayList<String> wordList =  fileManager.openTXT(txtFile);
 
-            ArrayList<String> wordList = new ArrayList<>();
+        for (String word : wordList) {
+            avlTree.insert(word, txtFile);
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String cleanWord = removeUnwantedCharacters(line);
-                String[] parts = cleanWord.split("[ .,;:]");
-                wordList.addAll(List.of(parts));
-            }
-
-            wordList.removeAll(Collections.singleton(" "));
-            wordList.removeAll(Collections.singleton(""));
-
-            for (String word : wordList) {
-                avlTree.insert(word, txtFile);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
     }
 
     private void indexDOCX(File docxFile) {
-        try (FileInputStream fis = new FileInputStream(docxFile.getAbsolutePath())) {
-            XWPFDocument document = new XWPFDocument(fis);
-            XWPFWordExtractor wordExtractor = new XWPFWordExtractor(document);
-            String textFromDoc = wordExtractor.getText();
-            String cleanWord = removeUnwantedCharacters(textFromDoc);
+        ArrayList<String> wordList = fileManager.openDOCX(docxFile);
 
-            ArrayList<String> wordList = new ArrayList<>();
+        for (String word : wordList) {
+            avlTree.insert(word, docxFile);
 
-            String[] parts = cleanWord.split("[ .,;:]");
-            wordList.addAll(List.of(parts));
-            System.out.println(wordList.size());
-
-            wordList.removeAll(Collections.singleton(" "));
-            wordList.removeAll(Collections.singleton(""));
-
-            for (String word : wordList) {
-                avlTree.insert(word, docxFile);
-            }
-
-            System.out.println("cleanWord");
-
-        } catch (Exception e) {
-        e.printStackTrace();
         }
     }
 
     private void indexPDF(File pdfFile) {
-        try (PDDocument document = Loader.loadPDF(pdfFile)) {
-            PDFTextStripper pdfStripper = new PDFTextStripper();
-            String text = pdfStripper.getText(document);
-            String cleanWord = removeUnwantedCharacters(text);
-            System.out.println(text);
+        ArrayList<String> wordList = fileManager.openPDF(pdfFile);
 
-            ArrayList<String> wordList = new ArrayList<>();
+        for (String word : wordList) {
+            avlTree.insert(word, pdfFile);
 
-            String[] parts = cleanWord.split("[ .,;:]");
-            wordList.addAll(List.of(parts));
-
-            wordList.removeAll(Collections.singleton(" "));
-            wordList.removeAll(Collections.singleton(""));
-
-            for (String word : wordList) {
-                avlTree.insert(word, pdfFile);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
     }
-
-    private String removeUnwantedCharacters(String word) {
-        String[] unwantedChar = {"\n","\t", "\r", "\\(", "\\)"};
-        String resultWord = word;
-        for (String character : unwantedChar) {
-            resultWord = resultWord.replaceAll(character, "");
-        }
-        return resultWord;
-    }
-
-
 
     public void deindexFile(File file, AVLNode root) {
         ArrayList fileOfOccurrence = root.occurrencesList.getFirst();
