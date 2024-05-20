@@ -1,8 +1,6 @@
 package Interface;
 
-import Logic.AVLTree;
-import Logic.FileManager;
-import Logic.Library;
+import Logic.*;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -14,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +25,20 @@ public class App {
     public static App app;
     public static JPanel libraryFilesPanel;
     public static JPanel libraryFoundFilesPanel;
+    public static ArrayList<File> filesOfOccurrenceList;
     public static JPanel mainContent;
     public static JButton deleteFile;
+    public static JTextField input;
     public static JLabel message;
     public static AVLTree avlTree;
     public static FileManager fileManager;
+    public boolean onBiblioSection = true;
+
     public static void main(String[] args) throws IOException {
         avlTree = new AVLTree();
         library = new Library();
         fileManager = new FileManager();
+        filesOfOccurrenceList = new ArrayList<>();
         app = new App();
 
         for (File file : library.fileList) {
@@ -46,20 +50,8 @@ public class App {
 
         System.out.println("sesese");
 
-//        avlTree.insert("hóla", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Matrices-Sistemas-Determinantes.pdf"));
-//        avlTree.insert("Hola", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
-//        avlTree.insert("hóla", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
-//        avlTree.insert("pedro", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
-//        avlTree.insert("dedo", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
-//        avlTree.insert("ajo", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
-//        avlTree.insert("22", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Sucesiones_y_series_-_Acuña_y_Calderón.pdf"));
-//        avlTree.insert("hóla", new File("C:\\Users\\Usuario\\Desktop\\Universidad\\2024_S1\\CAL\\Folleto_Induccion,_Sucesiones_y_series.pdf"));
-
-
-
-
-
     }
+
     public App() throws IOException {
         mainFrame = new JFrame("Text Finder"); // create new frame
         mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE); // set close operation
@@ -83,7 +75,7 @@ public class App {
     public void createHeaderPanel() {
         JPanel header = new JPanel();
         header.setLayout(new BorderLayout());
-        header.setPreferredSize(new Dimension(1200,100));
+        header.setPreferredSize(new Dimension(1200,125));
         header.setBackground(Color.decode("#bababa"));
 
         JPanel mainOptions = new JPanel();
@@ -116,7 +108,7 @@ public class App {
         secondaryOptions.setLayout(new BoxLayout(secondaryOptions, BoxLayout.X_AXIS));
         secondaryOptions.setPreferredSize(new Dimension(1200,50));
         secondaryOptions.setBackground(Color.decode("#bababa"));
-        header.add(secondaryOptions, BorderLayout.SOUTH);
+        header.add(secondaryOptions, BorderLayout.CENTER);
 
         JPanel secondaryBiblioOptions = new JPanel();
         secondaryBiblioOptions.setLayout(new BoxLayout(secondaryBiblioOptions, BoxLayout.X_AXIS));
@@ -134,6 +126,88 @@ public class App {
         secondaryFindOptions.setBackground(Color.decode("#bababa"));
         secondaryFindOptions.setVisible(false);
         secondaryOptions.add(secondaryFindOptions);
+
+
+        JPanel sortOptions = new JPanel();
+        sortOptions.setLayout(new BoxLayout(sortOptions, BoxLayout.X_AXIS));
+        sortOptions.setAlignmentX(JButton.CENTER_ALIGNMENT);
+        sortOptions.setPreferredSize(new Dimension(1200,25));
+        sortOptions.setBackground(Color.decode("#bababa"));
+        JLabel sortLabel = new JLabel("Ordenar por: ");
+        sortLabel.setFont(new Font("Arial", Font.PLAIN, 25));
+
+        JButton sortByName = new JButton("Nombre");
+        buttonStyle(sortByName, "#bababa");
+        mouseHoverEvents(sortByName, "#bababa", "#dadada");
+        sortByName.addActionListener(e -> {
+            QuickSort quickSort = new QuickSort();
+            if (onBiblioSection) {
+                try {
+                    quickSort.sort(library.fileList);
+                    listFilesOnScreen();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                try {
+                    quickSort.sort(filesOfOccurrenceList);
+                    listFoundFilesOnScreen(input);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton sortByDate = new JButton("Fecha de modificacion");
+        buttonStyle(sortByDate, "#bababa");
+        mouseHoverEvents(sortByDate, "#bababa", "#dadada");
+        sortByDate.addActionListener(e -> {
+            BubbleSort bubbleSort = new BubbleSort();
+            if (onBiblioSection) {
+                try {
+                    bubbleSort.sortByDate(library.fileList);
+                    listFilesOnScreen();
+                } catch (ParseException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                try {
+                    bubbleSort.sortByDate(filesOfOccurrenceList);
+                    listFoundFilesOnScreen(input);
+                } catch (ParseException | IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton sortBySize = new JButton("Tamaño");
+        buttonStyle(sortBySize, "#bababa");
+        mouseHoverEvents(sortBySize, "#bababa", "#dadada");
+        sortBySize.addActionListener(e -> {
+            RadixSort radixSort = new RadixSort();
+            if (onBiblioSection) {
+                try {
+                    radixSort.sort(library.fileList);
+                    listFilesOnScreen();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                try {
+                    radixSort.sort(filesOfOccurrenceList);
+                    listFoundFilesOnScreen(input);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        sortOptions.add(sortLabel);
+        sortOptions.add(sortByName);
+        sortOptions.add(sortByDate);
+        sortOptions.add(sortBySize);
+
+        header.add(sortOptions, BorderLayout.SOUTH);
 
         JPanel[] secondaryOptionsPanels = {secondaryBiblioOptions, secondaryFindOptions};
         biblioOptions(secondaryOptionsPanels);
@@ -167,11 +241,12 @@ public class App {
                     secondaryOptionsPanel[0].setVisible(true);
                     secondaryOptionsPanel[1].setVisible(false);
                     cl.show(mainContent, "Panel 1");
+                    onBiblioSection = true;
                 } else if (jButton == mainButtons[1]) {
                     secondaryOptionsPanel[0].setVisible(false);
                     secondaryOptionsPanel[1].setVisible(true);
                     cl.show(mainContent, "Panel 2");
-
+                    onBiblioSection = false;
                 } else {
                     System.out.println("pepe");
 
@@ -183,6 +258,7 @@ public class App {
 
         });
     }
+
     private void mouseHoverEvents(JButton jButton, String primaryColor, String secondaryColor){
         jButton.addMouseListener(new MouseAdapter() {
 
@@ -242,15 +318,13 @@ public class App {
 
     }
 
-
-
     private void findOptions(JPanel[] secondaryOptionsPanels, JButton[] mainButtons) {
         JLabel enterTextLabel = new JLabel("Ingrese el texto:");
         enterTextLabel.setFont(new Font("Arial", Font.PLAIN, 25));
         enterTextLabel.setBorder(BorderFactory.createMatteBorder(12, 12, 12, 0, Color.decode("#bababa")));
         secondaryOptionsPanels[1].add(enterTextLabel);
 
-        JTextField input = new JTextField();
+        input = new JTextField();
         input.setFont(new Font("Arial", Font.PLAIN, 20));
         input.setBorder(BorderFactory.createMatteBorder(12, 12, 12, 0, Color.decode("#bababa")));
         secondaryOptionsPanels[1].add(input);
@@ -260,7 +334,11 @@ public class App {
         buttonStyle(findWord,"#aeaeae");
         mouseHoverEvents(findWord, "#aeaeae", "#cacaca");
         findWord.addActionListener(e -> {
-            listFoundFilesOnScreen(input);
+            try {
+                listFoundFilesOnScreen(input);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         secondaryOptionsPanels[1].add(findWord);
         JButton findPhrase = new JButton("Buscar palabras");
@@ -273,29 +351,19 @@ public class App {
         secondaryOptionsPanels[1].add(findPhrase);
     }
 
-
     private void createMainContentPanel() throws IOException {
         mainContent = new JPanel();
         mainContent.setLayout(new CardLayout());
-        mainContent.setPreferredSize(new Dimension(1200,700));
+        mainContent.setPreferredSize(new Dimension(1200,675));
         mainContent.setBackground(Color.decode("#111111"));
 
         showLibraryFiles(mainContent);
         showFoundFiles(mainContent);
 
-//        JPanel mainOptions = new JPanel();
-//        mainOptions.setLayout(new BoxLayout(mainOptions, BoxLayout.X_AXIS));
-//        mainOptions.setPreferredSize(new Dimension(1200,50));
-//        mainOptions.setBackground(Color.decode("#aeaeae"));
-//        mainContent.add(mainOptions, BorderLayout.NORTH);
-
-
-
-
-
         mainFrame.add(mainContent, BorderLayout.CENTER);
 
     }
+
     private void showLibraryFiles(JPanel mainContent) throws IOException {
         libraryFilesPanel = new JPanel();
         libraryFilesPanel.setLayout(new BoxLayout(libraryFilesPanel, BoxLayout.Y_AXIS));
@@ -311,36 +379,23 @@ public class App {
 
         listFilesOnScreen();
 
-
-
-
     }
+
     private void showFoundFiles(JPanel mainContent){
         libraryFoundFilesPanel = new JPanel();
+
         libraryFoundFilesPanel.setLayout(new BoxLayout(libraryFoundFilesPanel, BoxLayout.Y_AXIS));
         libraryFoundFilesPanel.setAlignmentY(JButton.TOP);
-        //libraryFilesPanel.setPreferredSize(new Dimension(1200, 30000));
         libraryFoundFilesPanel.setBackground(Color.decode("#eeeeee"));
-        //libraryFoundFilesPanel.setBackground(Color.decode("#ff000"));
-
-        //libraryFoundFilesPanel.setVisible(false);
-        //mainContent.add(libraryFoundFilesPanel);
-
 
         JScrollPane scrollPane2 = scrollPaneConfig(libraryFoundFilesPanel);
 
 
         mainContent.add(scrollPane2, "Panel 2");
 
-
-        //listFoundFilesOnScreen();
-
-
-
-
     }
 
-    private void listFoundFilesOnScreen(JTextField input) {
+    private void listFoundFilesOnScreen(JTextField input) throws IOException {
         libraryFoundFilesPanel.removeAll();
         libraryFoundFilesPanel.revalidate();
         libraryFoundFilesPanel.repaint();
@@ -348,10 +403,9 @@ public class App {
         ArrayList<ArrayList> findWord = avlTree.search(text);
         if (findWord != null) {
 
-            ArrayList filesOfOccurrenceList = findWord.getFirst();
-            System.out.println(filesOfOccurrenceList);
-            ArrayList occurrenceNumList = avlTree.search(text).get(1);
-            ArrayList noDuplicatesOccurrenceList = new ArrayList(List.of(new HashSet<>(filesOfOccurrenceList).toArray())) ;
+            filesOfOccurrenceList = findWord.getFirst();
+            ArrayList<Integer> occurrenceNumList = avlTree.search(text).get(1);
+            ArrayList<File> noDuplicatesOccurrenceList = new ArrayList(List.of(new HashSet<>(filesOfOccurrenceList).toArray())) ;
 
             ArrayList<ArrayList<String>> textOnFiles = new ArrayList<>();
 
@@ -373,48 +427,9 @@ public class App {
                 }
             }
             for (int i = 0; i < filesOfOccurrenceList.size(); i++) {
-
-
-
-                JPanel resultRow = new JPanel();
-                ArrayList<String> wordListOfFile = textOnFiles.get(noDuplicatesOccurrenceList.indexOf(filesOfOccurrenceList.get(i)));
-                int wordIndexInFile = findNthOccurrence(wordListOfFile, text, (Integer) occurrenceNumList.get(i));
-                ArrayList<String> textToPrint = getTextToPrint(wordIndexInFile, wordListOfFile, i);
-
-                if (wordIndexInFile != -1) {
-                    JTextPane textPane = new JTextPane();
-                    textPane.setEditable(false); // Make the text pane read-only
-
-                    StyledDocument doc = textPane.getStyledDocument();
-
-                    // Define regular style
-                    Style regularStyle = textPane.addStyle("RegularStyle", null);
-                    StyleConstants.setFontSize(regularStyle, 16);
-                    StyleConstants.setForeground(regularStyle, Color.BLACK);
-
-                    // Define highlighted style
-                    Style highlightedStyle = textPane.addStyle("HighlightedStyle", null);
-                    StyleConstants.setFontSize(highlightedStyle, 16);
-                    StyleConstants.setForeground(highlightedStyle, Color.RED);
-
-
-                    try {
-                        for (String word : textToPrint) {
-                            if (word.contains("###$$$###")) {
-                                String removeMark = word.replace("###$$$###", "");
-                                doc.insertString(doc.getLength(), removeMark, highlightedStyle);
-                            } else {
-                                doc.insertString(doc.getLength(), word, regularStyle);
-                            }
-                        }
-                    } catch (BadLocationException e) {
-                        e.printStackTrace();
-                    }
-
-                    resultRow.add(textPane);
-                }
-                libraryFoundFilesPanel.add(resultRow);
+                createFoundFileRow(i, textOnFiles, noDuplicatesOccurrenceList, filesOfOccurrenceList, text, occurrenceNumList);
             }
+
         } else {
             JLabel notFoundRow = new JLabel("Not Found");
 
@@ -426,9 +441,88 @@ public class App {
         }
     }
 
+    private void createFoundFileRow(int i,
+                                    ArrayList<ArrayList<String>> textOnFiles,
+                                    ArrayList<File> noDuplicatesOccurrenceList,
+                                    ArrayList<File> filesOfOccurrenceList,
+                                    String text,
+                                    ArrayList<Integer> occurrenceNumList
+    ) throws IOException {
+        JPanel resultRow = new JPanel();
+        resultRow.setLayout(new BorderLayout());
+//        rowToOpenMouseListener(resultRow, filesOfOccurrenceList.get(i));
+//        resultRow.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        resultRow.setBorder(BorderFactory.createMatteBorder(8, 8,0,8,Color.DARK_GRAY));
+        ArrayList<String> wordListOfFile = textOnFiles.get(noDuplicatesOccurrenceList.indexOf(filesOfOccurrenceList.get(i)));
+        int wordIndexInFile = findNthOccurrence(wordListOfFile, text, occurrenceNumList.get(i));
+        ArrayList<String> textToPrint = getTextToPrint(wordIndexInFile, wordListOfFile, i);
+
+        if (wordIndexInFile != -1) {
+            JTextPane textPane = new JTextPane();
+            textPane.setPreferredSize(new Dimension(1150,35));
+            textPane.setFocusable(false);
+            textPane.setEditable(false); // Make the text pane read-only
+
+            StyledDocument doc = textPane.getStyledDocument();
+
+            // Define regular style
+            Style regularStyle = textPane.addStyle("RegularStyle", null);
+            StyleConstants.setFontSize(regularStyle, 20);
+            StyleConstants.setFontFamily(regularStyle,"Arial");
+            StyleConstants.setForeground(regularStyle, Color.BLACK);
+
+            // Define highlighted style
+            Style highlightedStyle = textPane.addStyle("HighlightedStyle", null);
+            StyleConstants.setFontSize(highlightedStyle, 20);
+            StyleConstants.setFontFamily(highlightedStyle,"Arial");
+            StyleConstants.setForeground(highlightedStyle, Color.RED);
+
+
+            try {
+                for (String word : textToPrint) {
+                    if (word.contains("###$$$###")) {
+                        String removeMark = word.replace("###$$$###", "");
+                        doc.insertString(doc.getLength(), removeMark, highlightedStyle);
+                    } else {
+                        doc.insertString(doc.getLength(), word, regularStyle);
+                    }
+                }
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+
+            JPanel fileInfo = new JPanel();
+            fileInfo.setLayout(new BorderLayout());
+
+            JLabel fileName = new JLabel(filesOfOccurrenceList.get(i).getName());
+            fileName.setPreferredSize(new Dimension(400,40));
+            fileInfo.add(fileName , BorderLayout.WEST);
+
+            JLabel fileLastModified = new JLabel(library.getFileDate(filesOfOccurrenceList.get(i)));
+            fileName.setPreferredSize(new Dimension(400,40));
+            fileInfo.add(fileLastModified , BorderLayout.CENTER);
+
+
+            JLabel fileSize = new JLabel(library.getFileSize(filesOfOccurrenceList.get(i)) + " KB");
+            fileName.setPreferredSize(new Dimension(350,40));
+            fileInfo.add(fileSize , BorderLayout.EAST);
+
+            Font fileTextFont = new Font("Arial", Font.PLAIN, 20);
+            fileName.setFont(fileTextFont);
+            fileLastModified.setFont(fileTextFont);
+            fileSize.setFont(fileTextFont);
+
+
+
+            resultRow.add(fileInfo, BorderLayout.NORTH);
+            resultRow.add(textPane, BorderLayout.SOUTH);
+        }
+        libraryFoundFilesPanel.add(resultRow);
+    }
+
     private ArrayList<String> getTextToPrint(int wordIndexInFile, ArrayList<String> wordListOfFile, int i) {
         ArrayList<String> textToPrint = new ArrayList<>();
-        if (wordIndexInFile > 12) {
+        if (wordIndexInFile > 12 && wordListOfFile.size() - wordIndexInFile > 10) {
             for (int j = 0; j < 10; j++) {
                 if ((wordIndexInFile - 3 + j) == wordIndexInFile) {
                     textToPrint.add(wordListOfFile.get(wordIndexInFile - 3 + j) + "###$$$###");
@@ -439,14 +533,27 @@ public class App {
             }
 
         } else {
-
-            for (int j = 0; j < wordListOfFile.size(); j++) {
-                if (j == wordIndexInFile) {
-                    textToPrint.add(wordListOfFile.get(i) + "###$$$###");
-                } else {
-                    textToPrint.add(wordListOfFile.get(i));
+            int wordNum = wordListOfFile.size();
+            if (wordNum > 10) {
+                if (wordIndexInFile > wordNum / 2) {
+                    for (int j = wordNum / 2; j < wordNum; j++) {
+                        if (j == wordIndexInFile) {
+                            textToPrint.add(wordListOfFile.get(j) + "###$$$###");
+                        } else {
+                            textToPrint.add(wordListOfFile.get(j));
+                        }
+                        textToPrint.add(" ");
+                    }
+                } else if (wordIndexInFile < wordNum / 2) {
+                    for (int j = 0; j < wordNum - wordNum / 2; j++) {
+                        if (j == wordIndexInFile) {
+                            textToPrint.add(wordListOfFile.get(j) + "###$$$###");
+                        } else {
+                            textToPrint.add(wordListOfFile.get(j));
+                        }
+                        textToPrint.add(" ");
+                    }
                 }
-                textToPrint.add(" ");
             }
         }
         return textToPrint;
@@ -464,7 +571,6 @@ public class App {
         }
         return -1;
     }
-
 
     private JScrollPane scrollPaneConfig(JPanel childPanel) {
         JScrollPane scrollPane = new JScrollPane(childPanel);
@@ -512,7 +618,9 @@ public class App {
     }
 
     private ArrayList<File> selectedRowFile = new ArrayList<>();
+
     private ArrayList<JPanel> selectedRowJPanel = new ArrayList<>();
+
     private void rowMouseListener(JPanel row, File file) {
 
         row.addMouseListener(new MouseAdapter() {
@@ -526,15 +634,29 @@ public class App {
             @Override
             public void mouseReleased(MouseEvent e) {
                 deleteFile.setEnabled(true);
-//                for (int i = 0; i < selectedRowFile.size(); i++) {
-//                    File toDelete = selectedRowFile.get(i);
-//                    //toDelete
-//                    selectedRowFile.remove(i);
-//                    selectedRowJPanel.remove(i);
-//
-//                }
-
             }
+        });
+
+    }
+
+    private ArrayList<File> selectedRowFileToOpen = new ArrayList<>();
+
+    private ArrayList<JPanel> selectedRowJPanelToOpen = new ArrayList<>();
+
+    private void rowToOpenMouseListener(JPanel row, File file) {
+
+        row.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                row.setBackground(Color.decode("#DDDDDD"));
+                selectedRowJPanelToOpen.add(row);
+                selectedRowFileToOpen.add(file);
+            }
+
+//            @Override
+//            public void mouseReleased(MouseEvent e) {
+//                deleteFile.setEnabled(true);
+//            }
         });
 
     }
