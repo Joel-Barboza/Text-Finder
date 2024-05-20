@@ -140,6 +140,8 @@ public class App {
         buttonStyle(sortByName, "#bababa");
         mouseHoverEvents(sortByName, "#bababa", "#dadada");
         sortByName.addActionListener(e -> {
+            selectedRowFile.clear();
+            deleteFile.setEnabled(false);
             QuickSort quickSort = new QuickSort();
             if (onBiblioSection) {
                 try {
@@ -162,6 +164,8 @@ public class App {
         buttonStyle(sortByDate, "#bababa");
         mouseHoverEvents(sortByDate, "#bababa", "#dadada");
         sortByDate.addActionListener(e -> {
+            selectedRowFile.clear();
+            deleteFile.setEnabled(false);
             BubbleSort bubbleSort = new BubbleSort();
             if (onBiblioSection) {
                 try {
@@ -184,6 +188,8 @@ public class App {
         buttonStyle(sortBySize, "#bababa");
         mouseHoverEvents(sortBySize, "#bababa", "#dadada");
         sortBySize.addActionListener(e -> {
+            selectedRowFile.clear();
+            deleteFile.setEnabled(false);
             RadixSort radixSort = new RadixSort();
             if (onBiblioSection) {
                 try {
