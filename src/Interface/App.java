@@ -10,6 +10,8 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -20,7 +22,7 @@ import java.util.List;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class App {
-    private static JFrame mainFrame;
+    public static JFrame mainFrame;
     public static Library library;
     public static App app;
     public static JPanel libraryFilesPanel;
@@ -29,7 +31,6 @@ public class App {
     public static JPanel mainContent;
     public static JButton deleteFile;
     public static JTextField input;
-    public static JLabel message;
     public static AVLTree avlTree;
     public static FileManager fileManager;
     public boolean onBiblioSection = true;
@@ -42,30 +43,23 @@ public class App {
         app = new App();
 
         for (File file : library.fileList) {
-            createActionInfoPanel("In progress -- Indexing files " + (library.fileList.indexOf(file) + 1)  + "/" + library.fileList.size() );
             library.indexer.indexFiles(file);
         }
-        createActionInfoPanel("Done -- Files on library indexed");
-
-
-        System.out.println("sesese");
 
     }
 
     public App() throws IOException {
-        mainFrame = new JFrame("Text Finder"); // create new frame
-        mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE); // set close operation
-        mainFrame.setSize(1200,800); // set frame dimensions
+        mainFrame = new JFrame("Text Finder");
+        mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        mainFrame.setSize(1200,800);
         mainFrame.setLayout(new BorderLayout());
-        mainFrame.setLocationRelativeTo(null); // position frame at the center of the screen
+        mainFrame.setLocationRelativeTo(null);
 
         createHeaderPanel();
         createMainContentPanel();
-        message = new JLabel("sisisi");
-        mainFrame.add(message, BorderLayout.SOUTH);
 
 
-        mainFrame.setVisible(true); // shows frame
+        mainFrame.setVisible(true);
 
 
 
@@ -94,10 +88,6 @@ public class App {
         buttonStyle(findOption, "#aeaeae");
         JButton[] mainButtons = {biblioOption,findOption};
 
-        // action listener for biblioOption button
-        biblioOption.addActionListener(e -> {
-
-        });
         mainOptions.add(biblioOption);
 
 
@@ -253,9 +243,6 @@ public class App {
                     secondaryOptionsPanel[1].setVisible(true);
                     cl.show(mainContent, "Panel 2");
                     onBiblioSection = false;
-                } else {
-                    System.out.println("pepe");
-
                 }
             }
 
@@ -301,7 +288,6 @@ public class App {
         buttonStyle(deleteFile, "#bababa");
         mouseHoverEvents(deleteFile, "#bababa", "#dadada");
         deleteFile.addActionListener(e -> {
-            App.createActionInfoPanel("In progress -- Deleting files from Library (deindexing files)");
             library.deleteFromLibrary(selectedRowFile);
             for (JPanel rowToDelete : selectedRowJPanel) {
                 rowToDelete.setVisible(false);
@@ -309,7 +295,6 @@ public class App {
             deleteFile.setEnabled(false);
             selectedRowJPanel.clear();
             selectedRowFile.clear();
-            App.createActionInfoPanel("Done -- Files deindexed and deleted from library");
         });
         secondaryOptionsPanels[0].add(deleteFile);
 
@@ -318,14 +303,16 @@ public class App {
         buttonStyle(refresh, "#bababa");
         mouseHoverEvents(refresh, "#bababa", "#dadada");
         refresh.addActionListener(e -> {
-            System.out.println("refrescando");
+            for (File file :library.fileList) {
+                library.indexer.indexFiles(file);
+            }
         });
         secondaryOptionsPanels[0].add(refresh);
 
     }
 
     private void findOptions(JPanel[] secondaryOptionsPanels, JButton[] mainButtons) {
-        JLabel enterTextLabel = new JLabel("Ingrese el texto:");
+        JLabel enterTextLabel = new JLabel("Ingrese el texto: ");
         enterTextLabel.setFont(new Font("Arial", Font.PLAIN, 25));
         enterTextLabel.setBorder(BorderFactory.createMatteBorder(12, 12, 12, 0, Color.decode("#bababa")));
         secondaryOptionsPanels[1].add(enterTextLabel);
@@ -374,9 +361,7 @@ public class App {
         libraryFilesPanel = new JPanel();
         libraryFilesPanel.setLayout(new BoxLayout(libraryFilesPanel, BoxLayout.Y_AXIS));
         libraryFilesPanel.setAlignmentY(JButton.TOP);
-        //libraryFilesPanel.setPreferredSize(new Dimension(1200, 30000));
         libraryFilesPanel.setBackground(Color.decode("#eeeeee"));
-        //mainContent.add(libraryFilesPanel);
 
 
         JScrollPane scrollPane1 = scrollPaneConfig(libraryFilesPanel);
@@ -420,14 +405,14 @@ public class App {
                 String fileExtension = library.getFileExtension(fileToRead);
                 ArrayList<String> fileText;
                 if (Objects.equals(fileExtension, "txt")) {
-                    fileText = fileManager.openTXT(fileToRead);
+                    fileText = fileManager.getWordsFromTXT(fileToRead);
                     textOnFiles.add(fileText);
                 } else if (Objects.equals(fileExtension, "docx")) {
-                    fileText = fileManager.openDOCX(fileToRead);
+                    fileText = fileManager.getWordsFromDOCX(fileToRead);
                     textOnFiles.add(fileText);
 
                 } else if (Objects.equals(fileExtension, "pdf")) {
-                    fileText = fileManager.openPDF(fileToRead);
+                    fileText = fileManager.getWordsFromPDF(fileToRead);
                     textOnFiles.add(fileText);
 
                 }
@@ -456,8 +441,6 @@ public class App {
     ) throws IOException {
         JPanel resultRow = new JPanel();
         resultRow.setLayout(new BorderLayout());
-//        rowToOpenMouseListener(resultRow, filesOfOccurrenceList.get(i));
-//        resultRow.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         resultRow.setBorder(BorderFactory.createMatteBorder(8, 8,0,8,Color.DARK_GRAY));
         ArrayList<String> wordListOfFile = textOnFiles.get(noDuplicatesOccurrenceList.indexOf(filesOfOccurrenceList.get(i)));
         int wordIndexInFile = findNthOccurrence(wordListOfFile, text, occurrenceNumList.get(i));
@@ -466,8 +449,9 @@ public class App {
         if (wordIndexInFile != -1) {
             JTextPane textPane = new JTextPane();
             textPane.setPreferredSize(new Dimension(1150,35));
+            rowToOpenMouseListener(resultRow, filesOfOccurrenceList.get(i), textPane, text, wordIndexInFile);
             textPane.setFocusable(false);
-            textPane.setEditable(false); // Make the text pane read-only
+            textPane.setEditable(false);
 
             StyledDocument doc = textPane.getStyledDocument();
 
@@ -508,7 +492,6 @@ public class App {
             fileName.setPreferredSize(new Dimension(400,40));
             fileInfo.add(fileLastModified , BorderLayout.CENTER);
 
-
             JLabel fileSize = new JLabel(library.getFileSize(filesOfOccurrenceList.get(i)) + " KB");
             fileName.setPreferredSize(new Dimension(350,40));
             fileInfo.add(fileSize , BorderLayout.EAST);
@@ -518,8 +501,6 @@ public class App {
             fileLastModified.setFont(fileTextFont);
             fileSize.setFont(fileTextFont);
 
-
-
             resultRow.add(fileInfo, BorderLayout.NORTH);
             resultRow.add(textPane, BorderLayout.SOUTH);
         }
@@ -528,40 +509,55 @@ public class App {
 
     private ArrayList<String> getTextToPrint(int wordIndexInFile, ArrayList<String> wordListOfFile, int i) {
         ArrayList<String> textToPrint = new ArrayList<>();
-        if (wordIndexInFile > 12 && wordListOfFile.size() - wordIndexInFile > 10) {
+        int wordNum = wordListOfFile.size();
+
+        if (wordIndexInFile > 12 && wordNum - wordIndexInFile > 10) {
             for (int j = 0; j < 10; j++) {
-                if ((wordIndexInFile - 3 + j) == wordIndexInFile) {
-                    textToPrint.add(wordListOfFile.get(wordIndexInFile - 3 + j) + "###$$$###");
+
+                int currentIndex = wordIndexInFile - 3 + j;
+                if (currentIndex == wordIndexInFile) {
+                    textToPrint.add(wordListOfFile.get(currentIndex) + "###$$$###");
                 } else {
-                    textToPrint.add(wordListOfFile.get(wordIndexInFile - 3 + j));
+                    textToPrint.add(wordListOfFile.get(currentIndex));
                 }
-                textToPrint.add(" ");
+
+                if (j < 9 && !isPunctuationMark(wordListOfFile.get(currentIndex + 1))) {
+                    textToPrint.add(" ");
+                }
             }
 
-        } else {
-            int wordNum = wordListOfFile.size();
-            if (wordNum > 10) {
-                if (wordIndexInFile > wordNum / 2) {
-                    for (int j = wordNum / 2; j < wordNum; j++) {
-                        if (j == wordIndexInFile) {
-                            textToPrint.add(wordListOfFile.get(j) + "###$$$###");
-                        } else {
-                            textToPrint.add(wordListOfFile.get(j));
-                        }
+        } else if (wordNum > 10) {
+
+            if (wordIndexInFile > wordNum / 2) {
+
+                for (int j = wordNum / 2; j < wordNum; j++) {
+
+                    if (j == wordIndexInFile) {
+                        textToPrint.add(wordListOfFile.get(j) + "###$$$###");
+                    } else {
+                        textToPrint.add(wordListOfFile.get(j));
+                    }
+
+                    if (j < wordNum - 1 && !isPunctuationMark(wordListOfFile.get(j + 1))) {
                         textToPrint.add(" ");
                     }
-                } else if (wordIndexInFile < wordNum / 2) {
-                    for (int j = 0; j < wordNum - wordNum / 2; j++) {
-                        if (j == wordIndexInFile) {
-                            textToPrint.add(wordListOfFile.get(j) + "###$$$###");
-                        } else {
-                            textToPrint.add(wordListOfFile.get(j));
-                        }
+                }
+            } else {
+                for (int j = 0; j < wordNum / 2; j++) {
+
+                    if (j == wordIndexInFile) {
+                        textToPrint.add(wordListOfFile.get(j) + "###$$$###");
+                    } else {
+                        textToPrint.add(wordListOfFile.get(j));
+                    }
+
+                    if (j < (wordNum / 2) - 1 && !isPunctuationMark(wordListOfFile.get(j + 1))) {
                         textToPrint.add(" ");
                     }
                 }
             }
         }
+
         return textToPrint;
     }
 
@@ -615,10 +611,6 @@ public class App {
             row.add(fileDate, BorderLayout.CENTER);
             row.add(fileSize, BorderLayout.EAST);
 
-
-
-
-
             libraryFilesPanel.add(row);
         }
     }
@@ -645,35 +637,99 @@ public class App {
 
     }
 
-    private ArrayList<File> selectedRowFileToOpen = new ArrayList<>();
+    private void rowToOpenMouseListener(JPanel row, File file, JTextPane textPane, String text, int wordIndexInFile) {
 
-    private ArrayList<JPanel> selectedRowJPanelToOpen = new ArrayList<>();
-
-    private void rowToOpenMouseListener(JPanel row, File file) {
-
-        row.addMouseListener(new MouseAdapter() {
+        // Mouse listener for the JTextPane
+        MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
-                row.setBackground(Color.decode("#DDDDDD"));
-                selectedRowJPanelToOpen.add(row);
-                selectedRowFileToOpen.add(file);
+            public void mouseClicked(MouseEvent event) {
+                mainFrame.setEnabled(false);
+                JFrame viewDocFrame = new JFrame();
+                viewDocFrame.setSize(800,600);
+                viewDocFrame.setLayout(new BorderLayout());
+                viewDocFrame.setLocationRelativeTo(null);
+                viewDocFrame.setVisible(true);
+
+                String fileExtension = library.getFileExtension(file);
+                ArrayList<String> fileText = new ArrayList<>();
+                if (Objects.equals(fileExtension, "txt")) {
+                    fileText = fileManager.getWordsFromTXT(file);
+                } else if (Objects.equals(fileExtension, "docx")) {
+                    fileText = fileManager.getWordsFromDOCX(file);
+                } else if (Objects.equals(fileExtension, "pdf")) {
+                    fileText = fileManager.getWordsFromPDF(file);
+                }
+
+
+                JTextPane jTextPane = new JTextPane();
+                jTextPane.setPreferredSize(new Dimension(780, 580));
+                jTextPane.setEditable(false);
+                JScrollPane jScrollPane = new JScrollPane(jTextPane);
+                StyledDocument doc = jTextPane.getStyledDocument();
+
+                // Define regular style
+                Style regularStyle = jTextPane.addStyle("RegularStyle", null);
+                StyleConstants.setFontSize(regularStyle, 20);
+                StyleConstants.setFontFamily(regularStyle,"Arial");
+                StyleConstants.setForeground(regularStyle, Color.BLACK);
+
+                // Define highlighted style
+                Style highlightedStyle = jTextPane.addStyle("HighlightedStyle", null);
+                StyleConstants.setFontSize(highlightedStyle, 20);
+                StyleConstants.setFontFamily(highlightedStyle,"Arial");
+                StyleConstants.setForeground(highlightedStyle, Color.RED);
+
+
+                int wordStartPosition = 0;
+
+                try {
+                    for (int i = 0; i < fileText.size(); i++) {
+                        String word = fileText.get(i);
+                        Style style = Objects.equals(word, text) ? highlightedStyle : regularStyle;
+
+                        if (i == wordIndexInFile) {
+                            wordStartPosition = doc.getLength();
+                        }
+
+
+                        doc.insertString(doc.getLength(), word, style);
+
+                        // Add a space if the next element is not a punctuation mark or we are not at the last element
+                        if (i < fileText.size() - 1 && !isPunctuationMark(fileText.get(i + 1))) {
+                            doc.insertString(doc.getLength(), " ", style);
+                        }
+                    }
+
+                    final int position = wordStartPosition;
+                    SwingUtilities.invokeLater(() -> {
+                        jTextPane.setCaretPosition(position);
+                        try {
+                            jTextPane.scrollRectToVisible(jTextPane.modelToView(position));
+                        } catch (BadLocationException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+                viewDocFrame.add(jScrollPane);
+                viewDocFrame.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        mainFrame.setEnabled(true);
+                    }
+                });
             }
+        };
+        textPane.addMouseListener(mouseAdapter);
 
-//            @Override
-//            public void mouseReleased(MouseEvent e) {
-//                deleteFile.setEnabled(true);
-//            }
-        });
+        row.addMouseListener(mouseAdapter);
 
     }
-
-    public static void createActionInfoPanel(String actionDescription){
-
-        message.setText(actionDescription);
-        message.setOpaque(true);
-        message.setBackground(Color.decode("#bababa"));
-        message.setFont(new Font("Arial", Font.PLAIN, 15));
-
+    private boolean isPunctuationMark(String str) {
+        return str.matches("\\p{Punct}");
     }
+
+
+
 }
 

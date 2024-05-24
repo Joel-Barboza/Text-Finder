@@ -35,7 +35,6 @@ public class Library {
         return extension;
     }
     private void chosenFileExtensionOnly(ArrayList<File> files){
-        //acceptedFiles.clear();
         for (File file : files){
             String fileExtension = getFileExtension(file);
             if (file.isDirectory()) {
@@ -71,7 +70,6 @@ public class Library {
             }
         }
         saveListOnFile();
-        //indexer.indexFiles(fileList);
     }
 
     // to extract try/catch block
@@ -110,7 +108,6 @@ public class Library {
             fileNames.add(file.getAbsolutePath());
         }
 
-
         return fileNames.contains(f.getAbsolutePath());
     }
 
@@ -123,12 +120,8 @@ public class Library {
                 String[] parts = line.split(Character.toString((char) 31));
                 File fileToAdd = new File(parts[1]);
                 fileList.add(fileToAdd);
+            }
 
-            }
-            for (File file : fileList) {
-                //indexer.indexFiles(file);
-            }
-            AVLTree yes = avlTree;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -139,8 +132,6 @@ public class Library {
         for (File file : fileListToDelete) {
             if (isInList(file)) {
                 fileList.remove(file);
-                //indexer.deindexFile(file, App.avlTree.getRoot());
-                //avlTree.inOrder(file);
             }
 
         }

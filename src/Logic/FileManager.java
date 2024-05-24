@@ -3,7 +3,6 @@ package Logic;
 import Interface.App;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -15,8 +14,6 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static Interface.App.avlTree;
 
 public class FileManager {
     private ArrayList<File> files;
@@ -32,17 +29,9 @@ public class FileManager {
 
             File[] selectedFiles = jFileChooser.getSelectedFiles();
             files = new ArrayList<>(List.of(selectedFiles));
-            App.createActionInfoPanel("In progress -- Indexing Files");
             library.addToLibrary(files);
-            App.createActionInfoPanel("Done -- Files indexed");
-            //ArrayList<File> listOfFiles = library.loadFromLibraryFile();
             App.app.listFilesOnScreen();
-            AVLTree si = App.avlTree;
 
-//            for (File f : listOfFiles) {
-//                System.out.println(f.getAbsolutePath());
-//
-//            }
         }
     }
 
@@ -79,20 +68,6 @@ public class FileManager {
         return jFileChooser;
     }
 
-    public ArrayList<File> getFilePath(){
-        return this.files;
-    }
-
-    private String removeUnwantedCharacters(String word) {
-        String[] unwantedChar = {"\n","\t", "\r", "\\(", "\\)"};
-        String resultWord = word;
-        word = Normalizer.normalize(word, Normalizer.Form.NFD);
-        word = word.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
-        for (String character : unwantedChar) {
-            resultWord = resultWord.replaceAll(character, "");
-        }
-        return resultWord;
-    }
 
     public String stripAccents(String s)
     {
@@ -100,74 +75,88 @@ public class FileManager {
         s = s.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
         return s;
     }
-    public ArrayList<String> openTXT(File file){
-        ArrayList<String> wordList = new ArrayList<>();
+    public String getTextFromTXT(File file){
+        StringBuilder text = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(file.getAbsoluteFile()))) {
 
 
             String line;
             while ((line = reader.readLine()) != null) {
-//                String cleanWord = removeUnwantedCharacters(line);
-                String cleanWord = stripAccents(line);
-//                String[] parts = cleanWord.split("[ .,;:]");
-                String[] parts = cleanWord.split("\\s+|(?<=\\W)|(?=\\W)");
-//                String[] parts = cleanWord.split("\\s+|(?=\\b)|(?<=\\b)|(?<=\\W)|(?=\\W)");
-//                String[] parts = cleanWord.split("[^\\p{L}0-9']+");
-//                String[] parts = cleanWord.split("[^\\p{IsLatin}0-9']+&&[^\\p{Punct}]");
-                wordList.addAll(List.of(parts));
-            }
-//            for (int i = 0; i < wordList.size(); i++) {
-//                wordList.set(i, stripAccents(wordList.get(i)));
-//            }
+                if (text.isEmpty()) {
+                    text.append(line);
+                } else {
+                    text.append("\n").append(line);
 
-//            wordList.removeAll(Collections.singleton(" "));
-            wordList.removeAll(Collections.singleton(""));
+                }
+            }
+//
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //System.out.println(wordList);
+        return text.toString();
+    }
+    public ArrayList<String> getWordsFromTXT(File file){
+
+        String cleanWord = stripAccents(getTextFromTXT(file));
+        String[] parts = cleanWord.split("\\s+|(?<=\\W)|(?=\\W)");
+        ArrayList<String> wordList = new ArrayList<>(List.of(parts));
+
+        wordList.removeAll(Collections.singleton(""));
+
         return wordList;
     }
 
-    public ArrayList<String> openDOCX(File file){
-        ArrayList<String> wordList = new ArrayList<>();
+
+    public String getTextFromDOCX(File file){
+        String text = null;
         try (FileInputStream fis = new FileInputStream(file.getAbsolutePath())) {
             XWPFDocument document = new XWPFDocument(fis);
             XWPFWordExtractor wordExtractor = new XWPFWordExtractor(document);
-            String textFromDoc = wordExtractor.getText();
-//            String cleanWord = removeUnwantedCharacters(textFromDoc);
-            String cleanWord = stripAccents(textFromDoc);
+            text = wordExtractor.getText();
 
-            String[] parts = cleanWord.split("[^\\p{L}0-9']+");
-            wordList.addAll(List.of(parts));
-
-//            wordList.removeAll(Collections.singleton(" "));
-            wordList.removeAll(Collections.singleton(""));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return text;
+    }
+    public ArrayList<String> getWordsFromDOCX(File file){
+
+        String cleanWord = stripAccents(getTextFromDOCX(file));
+
+        String[] parts = cleanWord.split("\\s+|(?<=\\W)|(?=\\W)");
+        ArrayList<String> wordList = new ArrayList<>(List.of(parts));
+
+        wordList.removeAll(Collections.singleton(""));
+
+
         return wordList;
     }
 
-    public ArrayList<String> openPDF(File file){
-        ArrayList<String> wordList = new ArrayList<>();
+    public String getTextFromPDF(File file) {
+        String text = null;
         try (PDDocument document = Loader.loadPDF(file)) {
             PDFTextStripper pdfStripper = new PDFTextStripper();
 
-            String text = pdfStripper.getText(document);
-//            String cleanWord = removeUnwantedCharacters(text);
-            String cleanWord = stripAccents(text);
-
-            String[] parts = cleanWord.split("[^\\p{L}0-9']+");
-            wordList.addAll(List.of(parts));
-
-//            wordList.removeAll(Collections.singleton(" "));
-            wordList.removeAll(Collections.singleton(""));
+            text = pdfStripper.getText(document);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return text;
+    }
+    public ArrayList<String> getWordsFromPDF(File file){
+
+        String cleanWord = stripAccents(getTextFromPDF(file));
+
+        String[] parts = cleanWord.split("\\s+|(?<=\\W)|(?=\\W)");
+        ArrayList<String> wordList = new ArrayList<>(List.of(parts));
+
+        wordList.removeAll(Collections.singleton(""));
+
+
         return wordList;
+
     }
 }
