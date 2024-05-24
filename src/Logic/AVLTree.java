@@ -212,18 +212,11 @@ public class AVLTree {
         if (root != null) {
             App.library.indexer.deindexFile(file, root);
             inOrderRecursive(root.left, file);
-            //System.out.println(root.key);
-            //root.occurrencesList.contains(file);
-//            System.out.println(root.key);
-//            System.out.println(file);
-//            System.out.println(root);
             inOrderRecursive(root.right, file);
         }
     }
 
-//    public AVLNode getRoot() {
-//        return root;
-//    }
+
 
     /* Given a non-empty binary search tree, return the
 node with minimum key value found in that tree.

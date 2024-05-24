@@ -1,12 +1,5 @@
 package Logic;
 
-import Interface.App;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-
 import java.io.*;
 import java.util.*;
 
@@ -38,7 +31,7 @@ public class Indexer {
         return extension;
     }
     private void indexTXT(File txtFile) {
-         ArrayList<String> wordList =  fileManager.openTXT(txtFile);
+         ArrayList<String> wordList =  fileManager.getWordsFromTXT(txtFile);
 
         for (String word : wordList) {
             avlTree.insert(word, txtFile);
@@ -48,7 +41,7 @@ public class Indexer {
     }
 
     private void indexDOCX(File docxFile) {
-        ArrayList<String> wordList = fileManager.openDOCX(docxFile);
+        ArrayList<String> wordList = fileManager.getWordsFromDOCX(docxFile);
 
         for (String word : wordList) {
             avlTree.insert(word, docxFile);
@@ -57,7 +50,7 @@ public class Indexer {
     }
 
     private void indexPDF(File pdfFile) {
-        ArrayList<String> wordList = fileManager.openPDF(pdfFile);
+        ArrayList<String> wordList = fileManager.getWordsFromPDF(pdfFile);
 
         for (String word : wordList) {
             avlTree.insert(word, pdfFile);

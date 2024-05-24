@@ -1,32 +1,16 @@
-AboutAssets.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Playlist-Datos\client\Resources\Raw\AboutAssets.txt18/03/2024 10:45 p.m.0
-Actividad_1.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Actividad_1.txt10/05/2024 11:14 p.m.0
-clean_code.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\clean_code.pdf10/04/2024 10:39 p.m.3694
-cliente.csproj.FileListAbsolute.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\obj\Debug\cliente.csproj.FileListAbsolute.txt11/04/2024 09:40 p.m.6
-ConsoleApp1.csproj.FileListAbsolute.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Code\ConsoleApp1\obj\Debug\net8.0\ConsoleApp1.csproj.FileListAbsolute.txt24/02/2024 02:02 a.m.1
-Head_First_Java_A_Brain-Friendly_Guide.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Head_First_Java_A_Brain-Friendly_Guide.pdf10/02/2024 06:34 p.m.159696
-library.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Text-Finder\out\production\Text-Finder\library.txt19/05/2024 08:56 p.m.5
-library.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Text-Finder\src\library.txt19/05/2024 11:31 p.m.0
-Likes.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\server\src\Logica\Likes\Likes.txt11/04/2024 09:42 p.m.0
-Likes.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\server\out\production\server\Logica\Likes\Likes.txt11/04/2024 09:42 p.m.0
-Link_Repo_Playlist.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Link_Repo_Playlist.txt11/05/2024 02:24 a.m.0
-Nuevo documento de texto.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Nuevo documento de texto.txt19/05/2024 01:04 a.m.0
-Propuesta de division de sprints.docxC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Propuesta de division de sprints.docx02/03/2024 10:51 p.m.144
-README.txt.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\README.txt.txt17/05/2024 05:58 p.m.0
-Tarea_clean-code.docxC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Tarea_clean-code.docx24/04/2024 11:36 p.m.696
-Tarea_extraclase#2-clean_code.docxC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Tarea_extraclase#2-clean_code.docx24/04/2024 11:37 p.m.698
-Tarea_extraclase#2-clean_code.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Tarea_extraclase#2-clean_code.pdf24/04/2024 11:38 p.m.664
-trabajo_extraclase_(1)[1].docxC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\trabajo_extraclase_(1)[1].docx05/04/2024 11:19 p.m.1231
+Barboza Picado Joel - 2023218734.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Tareas\Barboza Picado Joel - 2023218734.pdf21/02/2024 02:38 p.m.1684
+Sucesiones_y_series_-_Acuña_y_Calderón.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Sucesiones_y_series_-_Acuña_y_Calderón.pdf26/01/2024 05:33 p.m.1112
+Suc-Series.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Prácticas\Suc-Series.pdf26/01/2024 05:35 p.m.321
+Práctica_Inducción.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Prácticas\Práctica_Inducción.pdf26/01/2024 05:35 p.m.225
+Ejercicios-Dependencia-Independencia-ValoresPropios.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Prácticas\Ejercicios-Dependencia-Independencia-ValoresPropios.pdf26/01/2024 05:35 p.m.118
+Ejer-Vectores-Rectas-Planos.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Prácticas\Ejer-Vectores-Rectas-Planos.pdf26/01/2024 05:35 p.m.213
+Ejer-Matrices-Sistemas-Determinantes-72421039.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Prácticas\Ejer-Matrices-Sistemas-Determinantes-72421039.pdf26/01/2024 05:35 p.m.263
+Ejer-Complejos.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Prácticas\Ejer-Complejos.pdf26/01/2024 05:35 p.m.245
+Números_complejos.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Números_complejos.pdf26/01/2024 05:33 p.m.812
+Matrices-Sistemas-Determinantes.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Matrices-Sistemas-Determinantes.pdf26/01/2024 05:33 p.m.906
+Folleto_Induccion,_Sucesiones_y_series.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Folleto_Induccion,_Sucesiones_y_series.pdf26/01/2024 05:33 p.m.2518
+EspacioVectorial.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\EspacioVectorial.pdf26/01/2024 05:33 p.m.247
+Complejos,_matrices_y_vectores_-_Luis_Acuña.pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\CAL\Complejos,_matrices_y_vectores_-_Luis_Acuña.pdf26/01/2024 05:33 p.m.1320
 trabajo_extraclase_(1)[1].pdfC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\trabajo_extraclase_(1)[1].pdf05/04/2024 11:19 p.m.344
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.ValueTuple.4.5.0\useSharedDesignerContext.txt15/05/2018 08:29 a.m.0
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Threading.Tasks.Extensions.4.5.4\useSharedDesignerContext.txt19/02/2020 04:05 a.m.0
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Buffers.4.5.1\useSharedDesignerContext.txt19/02/2020 04:05 a.m.0
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\useSharedDesignerContext.txt31/10/2023 08:49 a.m.0
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Text.Json.8.0.3\useSharedDesignerContext.txt14/02/2024 05:41 p.m.0
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Text.Encodings.Web.8.0.0\useSharedDesignerContext.txt31/10/2023 08:49 a.m.0
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\useSharedDesignerContext.txt22/10/2021 06:32 p.m.0
-useSharedDesignerContext.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Memory.4.5.5\useSharedDesignerContext.txt07/05/2022 10:31 p.m.0
-version.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Numerics.Vectors.4.5.0\version.txt15/05/2018 08:29 a.m.0
-version.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Buffers.4.5.1\version.txt19/02/2020 04:05 a.m.0
-version.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Memory.4.5.5\version.txt07/05/2022 10:31 p.m.0
-version.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.ValueTuple.4.5.0\version.txt15/05/2018 08:29 a.m.0
-version.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\Community_Playlist\cliente\packages\System.Threading.Tasks.Extensions.4.5.4\version.txt19/02/2020 04:05 a.m.0
+trabajo_extraclase_(1)[1].docxC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\trabajo_extraclase_(1)[1].docx05/04/2024 11:19 p.m.1231
+README.txt.txtC:\Users\Usuario\Desktop\Universidad\2024_S1\Datos 1\README.txt.txt17/05/2024 05:58 p.m.0
